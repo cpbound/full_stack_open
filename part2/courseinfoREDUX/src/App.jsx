@@ -1,15 +1,15 @@
 const Course = ({ course }) => {
+  console.log(course);
   return (
     <>
       <Header course={course.name} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </>
   );
 };
 
 const Header = ({ course }) => <h1>{course}</h1>;
-
-const Total = ({ sum }) => <p>Number of exercises {sum}</p>;
 
 const Part = ({ part }) => (
   <p>
@@ -19,6 +19,14 @@ const Part = ({ part }) => (
 
 const Content = ({ parts }) => {
   return parts.map((part) => <Part part={part} key={part.id} />);
+};
+
+const Total = ({ parts }) => {
+  return (
+    <p>
+      Number of exercises {parts.reduce((acc, part) => acc + part.exercises, 0)}
+    </p>
+  );
 };
 
 const App = () => {
