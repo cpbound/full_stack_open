@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import Search from "./components/Search";
 import AddContact from "./components/AddContact";
 import ContactList from "./components/ContactList";
-import axios from "axios";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState();
-  const [newNumber, setNewNumber] = useState();
+  const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
   const [showAll, setShowAll] = useState("");
 
   useEffect(() => {
     console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
+    personService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -45,8 +44,8 @@ const App = () => {
       id: persons.length + 1,
     };
 
-    axios
-      .post("http://localhost:3001/persons", personObject)
+    personService
+      .create(personObject)
       .then((response) => {
         setPersons(persons.concat(response.data));
         setNewName("");
