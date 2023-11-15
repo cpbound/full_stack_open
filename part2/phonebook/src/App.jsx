@@ -44,13 +44,24 @@ const App = () => {
       id: persons.length + 1,
     };
 
-    personService
-      .create(personObject)
-      .then((response) => {
-        setPersons(persons.concat(response.data));
-        setNewName("");
-        setNewNumber("");
-      });
+    personService.create(personObject).then((response) => {
+      setPersons(persons.concat(response.data));
+      setNewName("");
+      setNewNumber("");
+    });
+  };
+
+  const deletePerson = (id) => {
+    const person = persons.find((person) => person.id === id);
+    const popup = window.confirm(`Delete ${person.name}?`);
+    if (!popup) {
+      return;
+    }
+    personService.destroy(person.id).then((response) => {
+      console.log(response);
+
+      setPersons(persons.filter((person) => person.id !== id));
+    });
   };
 
   const namesToShow = persons.filter((person) =>
@@ -74,7 +85,7 @@ const App = () => {
         numberHandler={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <ContactList contacts={namesToShow} />
+      <ContactList contacts={namesToShow} deletePerson={deletePerson} />
     </>
   );
 };
