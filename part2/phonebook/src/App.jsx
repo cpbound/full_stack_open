@@ -58,23 +58,29 @@ const App = () => {
       if (!popup) {
         return;
       } else {
-        personService.update(searchedName.id, personObject).then((response) => {
-          setPersons(
-            persons.map(
-              (person) =>
-                console.log(person, response.data) ||
-                person.id !== searchedName.id
-                  ? person
-                  : response.data,
-              setNewName(""),
-              setNewNumber("")
-            ),
-            setInfoMessage(`Updated ${personObject.name}`),
-            setTimeout(() => {
-              setInfoMessage(null);
-            }, 3000)
-          );
-        });
+        personService
+          .update(searchedName.id, personObject)
+          .then((response) => {
+            setPersons(
+              persons.map(
+                (person) =>
+                  console.log(person, response.data) ||
+                  person.id !== searchedName.id
+                    ? person
+                    : response.data,
+                setNewName(""),
+                setNewNumber("")
+              ),
+              setInfoMessage(`Updated ${personObject.name}`),
+              setTimeout(() => {
+                setInfoMessage(null);
+              }, 3000)
+            );
+          })
+          .catch((error) => {
+            console.log(error.message)
+            setInfoMessage("This person has already been deleted!")
+          });
       }
     } else {
       personService.create(personObject).then((response) => {
@@ -100,9 +106,9 @@ const App = () => {
 
       setPersons(persons.filter((person) => person.id !== id));
       setInfoMessage(`Deleted ${person.name}`),
-          setTimeout(() => {
-            setInfoMessage(null);
-          }, 3000);
+        setTimeout(() => {
+          setInfoMessage(null);
+        }, 3000);
     });
   };
 
