@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Search from "./components/Search";
 import AddContact from "./components/AddContact";
 import ContactList from "./components/ContactList";
+import Notification from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
@@ -9,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [showAll, setShowAll] = useState("");
+  const [infoMessage, setInfoMessage] = useState(null);
 
   useEffect(() => {
     // console.log("effect");
@@ -16,8 +18,6 @@ const App = () => {
       setPersons(response.data);
     });
   }, []);
-
-  // console.log("render", persons.length, "contacts");
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
@@ -58,9 +58,7 @@ const App = () => {
       if (!popup) {
         return;
       } else {
-        console.log(personObject, searchedName);
         personService.update(searchedName.id, personObject).then((response) => {
-          console.log(searchedName, personObject, response.data);
           setPersons(
             persons.map(
               (person) =>
@@ -70,7 +68,11 @@ const App = () => {
                   : response.data,
               setNewName(""),
               setNewNumber("")
-            )
+            ),
+            setInfoMessage(`Updated ${personObject.name}`),
+            setTimeout(() => {
+              setInfoMessage(null);
+            }, 3000)
           );
         });
       }
@@ -79,6 +81,10 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
+        setInfoMessage(`Added ${personObject.name}`),
+          setTimeout(() => {
+            setInfoMessage(null);
+          }, 3000);
       });
     }
   };
@@ -93,11 +99,16 @@ const App = () => {
       console.log(response);
 
       setPersons(persons.filter((person) => person.id !== id));
+      setInfoMessage(`Deleted ${person.name}`),
+          setTimeout(() => {
+            setInfoMessage(null);
+          }, 3000);
     });
   };
 
   return (
     <>
+      <Notification message={infoMessage} />
       <h2>Phonebook</h2>
       <Search filter={handleFilterChange} />
       <h2>Add Contact</h2>
