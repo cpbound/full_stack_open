@@ -6,6 +6,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [countries, setCountries] = useState([]);
 
+
   const handleSearchChange = (event) => {
     event.preventDefault();
     setSearch(event.target.value);
@@ -17,20 +18,13 @@ function App() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   const filter = countries.filter((country) =>
-  //     console.log(country.name.common.toLowerCase())
-  //   );
-  //   setFilteredCountries(filter);
-  // }, [search, countries]);
-
   return (
     <div className="App">
       <h1>Find Countries</h1>
       <div>
         <input value={search} onChange={handleSearchChange} />
       </div>
-      <Countries countries={countries} search={search} />
+      <Countries countries={countries} search={search} setSearch={setSearch} />
     </div>
   );
 }

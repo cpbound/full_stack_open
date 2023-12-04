@@ -1,6 +1,7 @@
+import { useState } from "react";
 import CountryStats from "./CountryStats";
 
-const Countries = ({ countries, search }) => {
+const Countries = ({ countries, search, setSearch }) => {
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(search.toLowerCase())
   );
@@ -10,8 +11,15 @@ const Countries = ({ countries, search }) => {
   } else if (filteredCountries.length <= 10 && filteredCountries.length > 1) {
     return (
       <div>
-        {filteredCountries.map((country) => (
-          <p>{country.name.common}</p>
+        {filteredCountries.map((country, i) => (
+          <p key={i}>
+            {country.name.common}{" "}
+            <button
+              onClick={() => setSearch(country.name.common.toLowerCase())}
+            >
+              Show
+            </button>
+          </p>
         ))}
       </div>
     );
@@ -20,7 +28,7 @@ const Countries = ({ countries, search }) => {
       <div>
         <CountryStats country={filteredCountries[0]} />
       </div>
-    )
+    );
   }
 };
 
