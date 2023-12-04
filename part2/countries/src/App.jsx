@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import countriesService from "./services/countriesService";
-import Country from "./components/Country";
+import Countries from "./components/Countries";
 
 function App() {
   const [search, setSearch] = useState("");
   const [countries, setCountries] = useState([]);
-  const [filteredCountries, setFilteredCountries] = useState([]);
 
   const handleSearchChange = (event) => {
     event.preventDefault();
@@ -14,19 +13,16 @@ function App() {
 
   useEffect(() => {
     countriesService.get().then((response) => {
-      const filteredNames = response.data.map((country) =>
-        country.name.common.toLowerCase()
-      );
-      setCountries(filteredNames);
+      setCountries(response.data);
     });
   }, []);
 
-  useEffect(() => {
-    const filter = countries.filter((name) =>
-      name.includes(search.toLowerCase())
-    );
-    setFilteredCountries(filter);
-  }, [search, countries]);
+  // useEffect(() => {
+  //   const filter = countries.filter((country) =>
+  //     console.log(country.name.common.toLowerCase())
+  //   );
+  //   setFilteredCountries(filter);
+  // }, [search, countries]);
 
   return (
     <div className="App">
@@ -34,7 +30,7 @@ function App() {
       <div>
         <input value={search} onChange={handleSearchChange} />
       </div>
-      <Country country={filteredCountries} />
+      <Countries countries={countries} search={search} />
     </div>
   );
 }
