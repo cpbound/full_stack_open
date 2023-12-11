@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 let persons = [
   {
     id: 1,
@@ -24,6 +26,20 @@ let persons = [
   },
 ];
 
+//Generate Id for PUT request
+const generateId = () => {
+  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
+
+//GET date
+app.get("/info", (req, res) => {
+  const date = new Date();
+  res.send(
+    `<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`
+  );
+});
+
 //GET all
 app.get("/api/persons", (req, res) => {
   res.json(persons);
@@ -40,12 +56,26 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
-//GET date
-app.get("/info", (req, res) => {
-  const date = new Date();
-  res.send(
-    `<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`
-  );
+//POST
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+  console.log("Hello", body);
+
+  if (!body.name) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number,
+  };
+
+  persons = persons.concat(person);
+
+  res.json(person);
 });
 
 //Destroy by :id
