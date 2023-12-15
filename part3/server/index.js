@@ -59,17 +59,17 @@ app.get("/api/persons/:id", (req, res) => {
 //POST
 app.post("/api/persons", (req, res) => {
   const body = req.body;
-  const numbs = persons.map((person) => person.number);
+  const names = persons.map((person) => person.name);
 
   if (!body.name || !body.number) {
     return res.status(400).json({
-      error: "name or number is missing",
+      error: "Name or number is missing",
     });
   }
 
-  if (numbs.includes(body.number)) {
+  if (names.includes(body.name)) {
     return res.status(400).json({
-      error: "number must be unique",
+      error: "Number must be unique",
     });
   }
 
