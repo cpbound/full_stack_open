@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+"title": "Hot For Preacher",
+"author": "Arto Helfflas",
+"url": "www.ponglapp.com",
+"likes": "1651"
+}
