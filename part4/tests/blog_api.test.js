@@ -102,6 +102,19 @@ test("a blog without a title or url will return a 400 status code", async () => 
   expect(response.body).toHaveLength(initialBlogs.length);
 });
 
+test("a blog can be deleted", async () => {
+  const response = await api.get("/api/blogs");
+  const blogToDelete = response.body[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await api.get("/api/blogs");
+  expect(blogsAtEnd.body).toHaveLength(initialBlogs.length - 1);
+
+  const contents = blogsAtEnd.body.map((blog) => blog.title);
+  expect(contents).not.toContain(blogToDelete.title);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
