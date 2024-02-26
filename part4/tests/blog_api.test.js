@@ -70,6 +70,23 @@ test("a valid blog can be added", async () => {
   expect(contents).toContain("Hot For Preacher");
 });
 
+test("a blog without likes will default to 0", async () => {
+  const newBlog = {
+    title: "Hot For Preacher",
+    author: "Arto Helfflas",
+    url: "www.ponglapp.com",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  expect(response.body[2].likes).toBe(0);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
