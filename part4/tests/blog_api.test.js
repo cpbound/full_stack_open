@@ -87,6 +87,21 @@ test("a blog without likes will default to 0", async () => {
   expect(response.body[2].likes).toBe(0);
 });
 
+test("a blog without a title or url will return a 400 status code", async () => {
+  const newBlog = {
+    url: "www.ponglapp.com",
+    likes: "1651",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+
+  const response = await api.get("/api/blogs");
+
+  console.log(response.body);
+
+  expect(response.body).toHaveLength(initialBlogs.length);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
