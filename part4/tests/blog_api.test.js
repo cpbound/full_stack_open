@@ -49,6 +49,27 @@ test("a blog has a unique id property", async () => {
   expect(response.body[0].id).toBeDefined();
 });
 
+test("a valid blog can be added", async () => {
+  const newBlog = {
+    title: "Hot For Preacher",
+    author: "Arto Helfflas",
+    url: "www.ponglapp.com",
+    likes: "1651",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+
+  const contents = response.body.map((r) => r.title);
+  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  expect(contents).toContain("Hot For Preacher");
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
