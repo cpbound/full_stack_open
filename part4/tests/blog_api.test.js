@@ -2,33 +2,22 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
+const helper = require("./test_helper");
 
 const Blog = require("../models/blog");
-
-const initialBlogs = [
-  {
-    _id: "5a422a851b54a676234d17f7",
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7,
-    __v: 0,
-  },
-  {
-    _id: "5a422aa71b54a676234d17f8",
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5,
-    __v: 0,
-  },
-];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
+  let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
+  blogObject = new Blog(helper.initialBlogs[1]);
+  await blogObject.save();
+  blogObject = new Blog(helper.initialBlogs[2]);
+  await blogObject.save();
+  blogObject = new Blog(helper.initialBlogs[3]);
+  await blogObject.save();
+  blogObject = new Blog(helper.initialBlogs[4]);
+  await blogObject.save();
+  blogObject = new Blog(helper.initialBlogs[5]);
   await blogObject.save();
 });
 
@@ -41,7 +30,7 @@ test("blogs are returned as json", async () => {
 
 test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
-  expect(response.body).toHaveLength(initialBlogs.length);
+  expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
 test("a blog has a unique id property", async () => {
@@ -66,7 +55,7 @@ test("a valid blog can be added", async () => {
   const response = await api.get("/api/blogs");
 
   const contents = response.body.map((r) => r.title);
-  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
   expect(contents).toContain("Hot For Preacher");
 });
 
@@ -84,7 +73,8 @@ test("a blog without likes will default to 0", async () => {
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
-  expect(response.body[2].likes).toBe(0);
+  console.log(response.body);
+  expect(response.body[6].likes).toBe(0);
 });
 
 test("a blog without a title or url will return a 400 status code", async () => {
@@ -99,7 +89,7 @@ test("a blog without a title or url will return a 400 status code", async () => 
 
   console.log(response.body);
 
-  expect(response.body).toHaveLength(initialBlogs.length);
+  expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
 test("a blog can be deleted", async () => {
@@ -109,7 +99,7 @@ test("a blog can be deleted", async () => {
   await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
   const blogsAtEnd = await api.get("/api/blogs");
-  expect(blogsAtEnd.body).toHaveLength(initialBlogs.length - 1);
+  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length - 1);
 
   const contents = blogsAtEnd.body.map((blog) => blog.title);
   expect(contents).not.toContain(blogToDelete.title);
