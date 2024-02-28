@@ -115,6 +115,20 @@ test("a blog can be deleted", async () => {
   expect(contents).not.toContain(blogToDelete.title);
 });
 
+test("the information of a blog can be updated", async () => {
+  const response = await api.get("/api/blogs");
+  const blogToUpdate = response.body[0];
+  const updatedBlog = { ...blogToUpdate, likes: 10 };
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  expect(updatedBlog.likes).toBe(10);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
