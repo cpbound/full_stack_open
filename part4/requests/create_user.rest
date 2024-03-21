@@ -2,8 +2,8 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-    "username": "Gribble",
-    "name": "Tad",
-    "password": "1234567",
+    "username": "cryptoh",
+    "name": "Stu Pid. Git",
+    "password": "9994999",
     "blogs": []
 }
