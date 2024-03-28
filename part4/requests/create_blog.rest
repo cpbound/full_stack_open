@@ -1,6 +1,6 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdsaXp6eSIsImlkIjoiNjVmYmVlMWU3YjYxNTQ4ZjMxZjhhMGVlIiwiaWF0IjoxNzExNTkxODgwLCJleHAiOjE3MTE1OTU0ODB9.w3M6m_2FUa7H4lsMCMquTU5jCcj3xfsdMSA9ybnS0MQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdsaXp6eSIsImlkIjoiNjVmYmVlMWU3YjYxNTQ4ZjMxZjhhMGVlIiwiaWF0IjoxNzExNTk4MDYzLCJleHAiOjE3MTE2MDE2NjN9.WYKq7Ulys4nAjQFH58EjPHdjijq9MPLWmmwqMSC7H8o
 
 {
 "title": "Let's Get Snotty",
