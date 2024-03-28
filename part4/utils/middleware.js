@@ -15,13 +15,21 @@ const unknownEndpoint = (request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get("authorization");
-  console.log("authorization", authorization);
 
   if (authorization && authorization.startsWith("Bearer ")) {
-    // console.log("request.token", request.token);
     request.token = authorization.replace("Bearer ", "");
   }
   // request.token = null;
+  next();
+};
+
+const userExtractor = (request, response, next) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "Token missing or invalid" });
+  }
+  request.user = decodedToken;
   next();
 };
 
@@ -60,4 +68,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor,
 };

@@ -1,11 +1,11 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdsaXp6eSIsImlkIjoiNjVmYmVlMWU3YjYxNTQ4ZjMxZjhhMGVlIiwiaWF0IjoxNzExNTk4MDYzLCJleHAiOjE3MTE2MDE2NjN9.WYKq7Ulys4nAjQFH58EjPHdjijq9MPLWmmwqMSC7H8o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdsaXp6eSIsImlkIjoiNjVmYmVlMWU3YjYxNTQ4ZjMxZjhhMGVlIiwiaWF0IjoxNzExNjAxNjgwLCJleHAiOjE3MTE2MDUyODB9.MGknjHR_u02yakpqxlNM2jdxBQbsyZ_Q7sbJas5_thM
 
 {
-"title": "Let's Get Snotty",
+"title": "Let's Get Snotty My Buddies",
 "author": "Sneezy Joe",
 "url": "www.snotboizzz.com",
-"likes": "11111111111111111",
+"likes": "13546563456755354",
 "userId": "65fbee1e7b61548f31f8a0ef"
 }
