@@ -1,4 +1,5 @@
 const logger = require("./logger");
+const jwt = require("jsonwebtoken");
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -8,8 +9,20 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (request, response, next) => {
   response.status(404).send({ error: "Unknown Endpoint" });
+};
+
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get("authorization");
+  console.log("authorization", authorization);
+
+  if (authorization && authorization.startsWith("Bearer ")) {
+    console.log("request.token", request.token);
+    request.token = authorization.replace("Bearer ", "");
+  }
+  // request.token = null;
+  next();
 };
 
 const errorHandler = (error, request, response, next) => {
@@ -34,7 +47,9 @@ const errorHandler = (error, request, response, next) => {
       .status(400)
       .json({ error: "Username is shorter than 3 characters" });
   } else if (error.name === "JsonWebTokenError") {
-    return response.status(400).json({ error: "token missiing or invalid" });
+    return response.status(400).json({ error: error.message });
+  } else if (error.name === "TokenExpiredError") {
+    return response.status(401).json({ error: "token expired" });
   }
 
   next(error);
@@ -44,4 +59,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 };

@@ -1,11 +1,11 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNyeXB0b2giLCJpZCI6IjY1ZmJiYzgwMmE2MjYwMTU5ZTZhZTg5MSIsImlhdCI6MTcxMTAwMjAyN30.AcFR_xCxDcAB1_0K1hY54upusOBbPPL8fMPt8RKHVDA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkdsaXp6eSIsImlkIjoiNjVmYmVlMWU3YjYxNTQ4ZjMxZjhhMGVlIiwiaWF0IjoxNzExNTkxODgwLCJleHAiOjE3MTE1OTU0ODB9.w3M6m_2FUa7H4lsMCMquTU5jCcj3xfsdMSA9ybnS0MQ
 
 {
-"title": "Hayfever Sux!",
+"title": "Let's Get Snotty",
 "author": "Sneezy Joe",
 "url": "www.snotboizzz.com",
-"likes": "1738",
-"userId": "65fba2971090d594caaa3025"
+"likes": "11111111111111111",
+"userId": "65fbee1e7b61548f31f8a0ef"
 }
