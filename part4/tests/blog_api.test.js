@@ -178,6 +178,29 @@ test("the information of a blog can be updated", async () => {
   expect(updatedBlog.likes).toBe(10);
 });
 
+test("a blog without a token fails with 401 status code", async () => {
+  const newBlog = {
+    title: "Hot For Preacher",
+    author: "Arto Helfflas",
+    url: "www.ponglapp.com",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(401)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await api.get("/api/blogs");
+  console.log(blogsAtEnd.body[0]);
+
+  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length);
+
+  const titles = blogsAtEnd.body.map((n) => n.title);
+
+  expect(titles).not.toContain("Hot For Preacher");
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });

@@ -16,7 +16,7 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   const body = request.body;
 
-  if (!request.user.id) {
+  if (!request.user) {
     return response
       .status(401)
       .json({ error: "Ooh, Token missing or invalid" });
