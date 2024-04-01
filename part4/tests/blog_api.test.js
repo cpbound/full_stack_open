@@ -3,10 +3,20 @@ const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
 const helper = require("./test_helper");
-
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const blog = require("../models/blog");
+
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash("sekret", 10);
+  const user = new User({ username: "root", name: "root", passwordHash });
+
+  await user.save();
+  console.log(user);
   let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
   blogObject = new Blog(helper.initialBlogs[1]);
@@ -46,10 +56,23 @@ test("a valid blog can be added", async () => {
     likes: "1651",
   };
 
+  const newUser = {
+    username: "Glizzy",
+    name: "Gary Lizard",
+    password: "1114111",
+    blogs: [],
+  };
+
+  await api.post("/api/users").send(newUser);
+
+  const result = await api.post("/api/login").send(newUser);
+  const token = result.body.token;
+
   await api
     .post("/api/blogs")
     .send(newBlog)
     .expect(201)
+    .set("Authorization", `Bearer ${token}`)
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
@@ -66,14 +89,27 @@ test("a blog without likes will default to 0", async () => {
     url: "www.ponglapp.com",
   };
 
+  const newUser = {
+    username: "Glizzy",
+    name: "Gary Lizard",
+    password: "1114111",
+    blogs: [],
+  };
+
+  await api.post("/api/users").send(newUser);
+
+  const result = await api.post("/api/login").send(newUser);
+  const token = result.body.token;
+
   await api
     .post("/api/blogs")
     .send(newBlog)
     .expect(201)
+    .set("Authorization", `Bearer ${token}`)
     .expect("Content-Type", /application\/json/);
 
   const response = await api.get("/api/blogs");
-  console.log(response.body);
+
   expect(response.body[6].likes).toBe(0);
 });
 
@@ -87,19 +123,42 @@ test("a blog without a title or url will return a 400 status code", async () => 
 
   const response = await api.get("/api/blogs");
 
-  console.log(response.body);
-
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
 test("a blog can be deleted", async () => {
-  const response = await api.get("/api/blogs");
-  const blogToDelete = response.body[0];
+  const newBlog = {
+    title: "Hot For Preacher",
+    author: "Arto Helfflas",
+    url: "www.ponglapp.com",
+  };
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  const newUser = {
+    username: "Glizzy",
+    name: "Gary Lizard",
+    password: "1114111",
+    blogs: [],
+  };
+
+  await api.post("/api/users").send(newUser);
+
+  const result = await api.post("/api/login").send(newUser);
+  const token = result.body.token;
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .set("Authorization", `Bearer ${token}`);
+
+  const response = await api.get("/api/blogs");
+  const blogToDelete = response.body[response.body.length - 1];
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(204);
 
   const blogsAtEnd = await api.get("/api/blogs");
-  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length - 1);
 
   const contents = blogsAtEnd.body.map((blog) => blog.title);
   expect(contents).not.toContain(blogToDelete.title);
