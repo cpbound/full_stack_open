@@ -16,7 +16,7 @@ beforeEach(async () => {
   const user = new User({ username: "root", name: "root", passwordHash });
 
   await user.save();
-  console.log(user);
+
   let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
   blogObject = new Blog(helper.initialBlogs[1]);
@@ -31,174 +31,194 @@ beforeEach(async () => {
   await blogObject.save();
 });
 
-test("blogs are returned as json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
+describe("when one user is in the db", () => {
+  test("blogs are returned as json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("all blogs are returned", async () => {
+    const response = await api.get("/api/blogs");
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test("a blog has a unique id property", async () => {
+    const response = await api.get("/api/blogs");
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test("all blogs are returned", async () => {
-  const response = await api.get("/api/blogs");
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
-});
+describe("when a user is logged in", () => {
+  test("a valid blog can be added", async () => {
+    const newBlog = {
+      title: "Hot For Preacher",
+      author: "Arto Helfflas",
+      url: "www.ponglapp.com",
+      likes: "1651",
+    };
 
-test("a blog has a unique id property", async () => {
-  const response = await api.get("/api/blogs");
-  expect(response.body[0].id).toBeDefined();
-});
+    const newUser = {
+      username: "Glizzy",
+      name: "Gary Lizard",
+      password: "1114111",
+      blogs: [],
+    };
 
-test("a valid blog can be added", async () => {
-  const newBlog = {
-    title: "Hot For Preacher",
-    author: "Arto Helfflas",
-    url: "www.ponglapp.com",
-    likes: "1651",
-  };
+    await api.post("/api/users").send(newUser);
 
-  const newUser = {
-    username: "Glizzy",
-    name: "Gary Lizard",
-    password: "1114111",
-    blogs: [],
-  };
+    const result = await api.post("/api/login").send(newUser);
+    const token = result.body.token;
 
-  await api.post("/api/users").send(newUser);
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .set("Authorization", `Bearer ${token}`)
+      .expect("Content-Type", /application\/json/);
 
-  const result = await api.post("/api/login").send(newUser);
-  const token = result.body.token;
+    const response = await api.get("/api/blogs");
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .set("Authorization", `Bearer ${token}`)
-    .expect("Content-Type", /application\/json/);
+    const contents = response.body.map((r) => r.title);
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
+    expect(contents).toContain("Hot For Preacher");
+  });
 
-  const response = await api.get("/api/blogs");
+  test("a blog without likes will default to 0", async () => {
+    const newBlog = {
+      title: "Hot For Preacher",
+      author: "Arto Helfflas",
+      url: "www.ponglapp.com",
+    };
 
-  const contents = response.body.map((r) => r.title);
-  expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
-  expect(contents).toContain("Hot For Preacher");
-});
+    const newUser = {
+      username: "Glizzy",
+      name: "Gary Lizard",
+      password: "1114111",
+      blogs: [],
+    };
 
-test("a blog without likes will default to 0", async () => {
-  const newBlog = {
-    title: "Hot For Preacher",
-    author: "Arto Helfflas",
-    url: "www.ponglapp.com",
-  };
+    await api.post("/api/users").send(newUser);
 
-  const newUser = {
-    username: "Glizzy",
-    name: "Gary Lizard",
-    password: "1114111",
-    blogs: [],
-  };
+    const result = await api.post("/api/login").send(newUser);
+    const token = result.body.token;
 
-  await api.post("/api/users").send(newUser);
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .set("Authorization", `Bearer ${token}`)
+      .expect("Content-Type", /application\/json/);
 
-  const result = await api.post("/api/login").send(newUser);
-  const token = result.body.token;
+    const response = await api.get("/api/blogs");
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .set("Authorization", `Bearer ${token}`)
-    .expect("Content-Type", /application\/json/);
+    expect(response.body[6].likes).toBe(0);
+  });
 
-  const response = await api.get("/api/blogs");
+  test("a blog without a title or url will return a 400 status code", async () => {
+    const newBlog = {
+      author: "Arto Helfflas",
+    };
 
-  expect(response.body[6].likes).toBe(0);
-});
+    const newUser = {
+      username: "Glizzy",
+      name: "Gary Lizard",
+      password: "1114111",
+      blogs: [],
+    };
 
-test("a blog without a title or url will return a 400 status code", async () => {
-  const newBlog = {
-    url: "www.ponglapp.com",
-    likes: "1651",
-  };
+    await api.post("/api/users").send(newUser);
 
-  await api.post("/api/blogs").send(newBlog).expect(400);
+    const result = await api.post("/api/login").send(newUser);
+    const token = result.body.token;
 
-  const response = await api.get("/api/blogs");
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(400)
+      .set("Authorization", `Bearer ${token}`)
+      .expect("Content-Type", /application\/json/);
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
-});
+    const response = await api.get("/api/blogs");
 
-test("a blog can be deleted", async () => {
-  const newBlog = {
-    title: "Hot For Preacher",
-    author: "Arto Helfflas",
-    url: "www.ponglapp.com",
-  };
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
 
-  const newUser = {
-    username: "Glizzy",
-    name: "Gary Lizard",
-    password: "1114111",
-    blogs: [],
-  };
+  test("a blog can be deleted", async () => {
+    const newBlog = {
+      title: "Hot For Preacher",
+      author: "Arto Helfflas",
+      url: "www.ponglapp.com",
+    };
 
-  await api.post("/api/users").send(newUser);
+    const newUser = {
+      username: "Glizzy",
+      name: "Gary Lizard",
+      password: "1114111",
+      blogs: [],
+    };
 
-  const result = await api.post("/api/login").send(newUser);
-  const token = result.body.token;
+    await api.post("/api/users").send(newUser);
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .set("Authorization", `Bearer ${token}`);
+    const result = await api.post("/api/login").send(newUser);
+    const token = result.body.token;
 
-  const response = await api.get("/api/blogs");
-  const blogToDelete = response.body[response.body.length - 1];
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .set("Authorization", `Bearer ${token}`);
 
-  await api
-    .delete(`/api/blogs/${blogToDelete.id}`)
-    .set("Authorization", `Bearer ${token}`)
-    .expect(204);
+    const response = await api.get("/api/blogs");
+    const blogToDelete = response.body[response.body.length - 1];
 
-  const blogsAtEnd = await api.get("/api/blogs");
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
 
-  const contents = blogsAtEnd.body.map((blog) => blog.title);
-  expect(contents).not.toContain(blogToDelete.title);
-});
+    const blogsAtEnd = await api.get("/api/blogs");
 
-test("the information of a blog can be updated", async () => {
-  const response = await api.get("/api/blogs");
-  const blogToUpdate = response.body[0];
-  const updatedBlog = { ...blogToUpdate, likes: 10 };
+    const contents = blogsAtEnd.body.map((blog) => blog.title);
+    expect(contents).not.toContain(blogToDelete.title);
+  });
 
-  await api
-    .put(`/api/blogs/${blogToUpdate.id}`)
-    .send(updatedBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+  test("the information of a blog can be updated", async () => {
+    const response = await api.get("/api/blogs");
+    const blogToUpdate = response.body[0];
+    const updatedBlog = { ...blogToUpdate, likes: 10 };
 
-  expect(updatedBlog.likes).toBe(10);
-});
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
 
-test("a blog without a token fails with 401 status code", async () => {
-  const newBlog = {
-    title: "Hot For Preacher",
-    author: "Arto Helfflas",
-    url: "www.ponglapp.com",
-  };
+    expect(updatedBlog.likes).toBe(10);
+  });
 
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(401)
-    .expect("Content-Type", /application\/json/);
+  test("a blog without a token fails with 401 status code", async () => {
+    const newBlog = {
+      title: "Hot For Preacher",
+      author: "Arto Helfflas",
+      url: "www.ponglapp.com",
+    };
 
-  const blogsAtEnd = await api.get("/api/blogs");
-  console.log(blogsAtEnd.body[0]);
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(401)
+      .expect("Content-Type", /application\/json/);
 
-  expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length);
+    const blogsAtEnd = await api.get("/api/blogs");
+    console.log(blogsAtEnd.body[0]);
 
-  const titles = blogsAtEnd.body.map((n) => n.title);
+    expect(blogsAtEnd.body).toHaveLength(helper.initialBlogs.length);
 
-  expect(titles).not.toContain("Hot For Preacher");
+    const titles = blogsAtEnd.body.map((n) => n.title);
+
+    expect(titles).not.toContain("Hot For Preacher");
+  });
 });
 
 afterAll(async () => {
