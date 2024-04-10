@@ -1,0 +1,9 @@
+.info {
+  color: blue;
+  background: aliceblue;
+  font-size: 20px;
+  border-style: dashed;
+  border-radius: 5px;
+  padding: 18px;
+  margin-bottom: 18px;
+}

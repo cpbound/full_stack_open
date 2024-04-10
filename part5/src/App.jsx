@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import Form from "./components/Form";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -9,6 +10,7 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [infoMessage, setInfoMessage] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -32,10 +34,14 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-    } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setInfoMessage("Logged in successfully");
       setTimeout(() => {
-        setErrorMessage(null);
+        setInfoMessage(null);
+      }, 5000);
+    } catch (exception) {
+      setInfoMessage("Wrong credentials");
+      setTimeout(() => {
+        setInfoMessage(null);
       }, 5000);
     }
   };
@@ -43,6 +49,12 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault();
     window.localStorage.clear();
+    setInfoMessage(
+      `Successfully Logged out. Y'all come back now y'hear, ${user.name}?`
+    );
+    setTimeout(() => {
+      setInfoMessage(null);
+    }, 5000);
     setUser(null);
     setUsername("");
     setPassword("");
@@ -51,12 +63,19 @@ const App = () => {
   const addBlog = (blogObject) => {
     blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
+      setInfoMessage(
+        `A blog with the title ${returnedBlog.title} has been added successfully.`
+      );
+      setTimeout(() => {
+        setInfoMessage(null);
+      }, 5000);
     });
   };
 
   if (user === null) {
     return (
       <>
+        <Notification message={infoMessage} />
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -85,6 +104,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={infoMessage} />
       <h2>Blogs</h2>
       <h3>
         [|[| <i>{user.name} logged in.</i> |]|]{" "}
