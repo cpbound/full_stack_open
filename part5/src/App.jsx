@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import Form from "./components/Form";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -47,6 +48,12 @@ const App = () => {
     setPassword("");
   };
 
+  const addBlog = (blogObject) => {
+    blogService.create(blogObject).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog));
+    });
+  };
+
   if (user === null) {
     return (
       <>
@@ -83,6 +90,9 @@ const App = () => {
         [|[| <i>{user.name} logged in.</i> |]|]{" "}
       </h3>
       <button onClick={handleLogout}>Logout</button>
+      <h3>Create New</h3>
+      <Form createBlog={addBlog} />
+      <br />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
