@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Form from "./components/Form";
+import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -11,6 +13,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [infoMessage, setInfoMessage] = useState(null);
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -61,6 +64,7 @@ const App = () => {
   };
 
   const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility();
     blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
       setInfoMessage(
@@ -74,50 +78,40 @@ const App = () => {
 
   if (user === null) {
     return (
-      <>
+      <div>
         <Notification message={infoMessage} />
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            Username
-            <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            Password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
-      </>
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
+        <h2>Blog List</h2>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
+      </div>
     );
   }
 
   return (
     <div>
       <Notification message={infoMessage} />
-      <h2>Blogs</h2>
       <h3>
         [|[| <i>{user.name} logged in.</i> |]|]{" "}
       </h3>
       <button onClick={handleLogout}>Logout</button>
-      <h3>Create New</h3>
-      <Form createBlog={addBlog} />
       <br />
+      <br />
+      <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
+        <Form createBlog={addBlog} />
+      </Togglable>
+      <h2>Blog List</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   );
 };
-
 export default App;
