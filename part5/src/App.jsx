@@ -76,6 +76,10 @@ const App = () => {
     });
   };
 
+  const updateLikes = async (id, blogObject) => {
+    await blogService.update(id, blogObject);
+  };
+
   if (user === null) {
     return (
       <div>
@@ -92,7 +96,7 @@ const App = () => {
           <div key={blog.id} className="blogStyle">
             <br />
             <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
-              <Blog blog={blog} />
+              <Blog blog={blog} updateLikes={updateLikes} />
             </Togglable>
           </div>
         ))}
@@ -121,7 +125,7 @@ const App = () => {
         <div key={blog.id} className="blogStyle">
           <br />
           <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
-            <Blog blog={blog} />
+            <Blog blog={blog} updateLikes={updateLikes} />
           </Togglable>
         </div>
       ))}
