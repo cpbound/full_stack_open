@@ -89,7 +89,12 @@ const App = () => {
         />
         <h2>Blog List</h2>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <div key={blog.id} className="blogStyle">
+            <br />
+            <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
+              <Blog blog={blog} />
+            </Togglable>
+          </div>
         ))}
       </div>
     );
@@ -104,12 +109,21 @@ const App = () => {
       <button onClick={handleLogout}>Logout</button>
       <br />
       <br />
-      <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
+      <Togglable
+        buttonLabel="Create New Blog"
+        buttonClose={"Cancel"}
+        ref={blogFormRef}
+      >
         <Form createBlog={addBlog} />
       </Togglable>
       <h2>Blog List</h2>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <div key={blog.id} className="blogStyle">
+          <br />
+          <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
+            <Blog blog={blog} />
+          </Togglable>
+        </div>
       ))}
     </div>
   );
