@@ -13,11 +13,15 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [infoMessage, setInfoMessage] = useState(null);
+  const [blogRefresh, setBlogRefresh] = useState(false);
   const blogFormRef = useRef();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    blogService.getAll().then((blogs) => {
+      blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(blogs);
+    });
+  }, [blogRefresh]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -78,6 +82,7 @@ const App = () => {
 
   const updateLikes = async (id, blogObject) => {
     await blogService.update(id, blogObject);
+    setBlogRefresh(!blogRefresh);
   };
 
   if (user === null) {
