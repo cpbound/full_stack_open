@@ -36,6 +36,7 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({ username, password });
+      console.log(user)
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
@@ -85,6 +86,11 @@ const App = () => {
     setBlogRefresh(!blogRefresh);
   };
 
+  const destroyBlog = async (id) => {
+    await blogService.destroy(id);
+    setBlogRefresh(!blogRefresh);
+  };
+
   if (user === null) {
     return (
       <div>
@@ -101,7 +107,7 @@ const App = () => {
           <div key={blog.id} className="blogStyle">
             <br />
             <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
-              <Blog blog={blog} updateLikes={updateLikes} />
+              <Blog blog={blog} updateLikes={updateLikes} user={user} />
             </Togglable>
           </div>
         ))}
@@ -130,7 +136,12 @@ const App = () => {
         <div key={blog.id} className="blogStyle">
           <br />
           <Togglable buttonLabel={blog.title} buttonClose={"Close"}>
-            <Blog blog={blog} updateLikes={updateLikes} />
+            <Blog
+              blog={blog}
+              updateLikes={updateLikes}
+              user={user}
+              destroyBlog={destroyBlog}
+            />
           </Togglable>
         </div>
       ))}
