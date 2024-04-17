@@ -19,6 +19,23 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
     }
   };
 
+  if (user === null) {
+    return (
+      <div>
+        <h3>{blog.title}</h3>
+        <p>
+          <i>Author: {blog.author}</i>
+        </p>
+        <a href={blog.url}>{blog.url}</a>
+        <p>
+          <b>{blog.likes} ♥️ </b>
+          <button onClick={handleLikes}>Like</button>
+        </p>
+        <p>Added by: {blog.user.username}</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h3>{blog.title}</h3>
@@ -31,9 +48,10 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
         <button onClick={handleLikes}>Like</button>
       </p>
       <p>Added by: {blog.user.username}</p>
-      <div>
-        <button onClick={handleDestroy}>Delete blog</button>
-      </div>
+      {blog.user !== null}
+      {blog.user.id === user.id && (
+        <button onClick={handleDestroy}>Delete Blog</button>
+      )}
     </div>
   );
 };
