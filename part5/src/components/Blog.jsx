@@ -5,9 +5,9 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes + 1,
-    };
-    updateLikes(blog.id, blogObject);
-  };
+    }
+    updateLikes(blog.id, blogObject)
+  }
 
   const handleDestroy = () => {
     if (
@@ -15,9 +15,9 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
         `Are you sure you want to delete ${blog.title} by ${blog.author}?`
       )
     ) {
-      destroyBlog(blog.id);
+      destroyBlog(blog.id)
     }
-  };
+  }
 
   if (user === null) {
     return (
@@ -33,7 +33,7 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
         </p>
         <p>Added by: {blog.user.username}</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -53,7 +53,7 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
         <button onClick={handleDestroy}>Delete Blog</button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
