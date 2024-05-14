@@ -1,3 +1,5 @@
+import Togglable from "./Togglable";
+
 const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
   const handleLikes = () => {
     const blogObject = {
@@ -5,9 +7,9 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
       author: blog.author,
       url: blog.url,
       likes: blog.likes + 1,
-    }
-    updateLikes(blog.id, blogObject)
-  }
+    };
+    updateLikes(blog.id, blogObject);
+  };
 
   const handleDestroy = () => {
     if (
@@ -15,45 +17,49 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
         `Are you sure you want to delete ${blog.title} by ${blog.author}?`
       )
     ) {
-      destroyBlog(blog.id)
+      destroyBlog(blog.id);
     }
-  }
+  };
 
   if (user === null) {
     return (
-      <div>
+      <div className="blogStyle">
         <h3>{blog.title}</h3>
         <p>
           <i>Author: {blog.author}</i>
         </p>
+        <Togglable buttonLabel="View" buttonClose="Close">
+          <a href={blog.url}>{blog.url}</a>
+          <p>
+            <b>{blog.likes} ♥️ </b>
+            <button onClick={handleLikes}>Like</button>
+          </p>
+          <p>Added by: {blog.user.username}</p>
+        </Togglable>
+      </div>
+    );
+  }
+
+  return (
+    <div className="blogStyle">
+      <h3>{blog.title}</h3>
+      <p>
+        <i>Author: {blog.author}</i>
+      </p>
+      <Togglable buttonLabel="View" buttonClose="Close">
         <a href={blog.url}>{blog.url}</a>
         <p>
           <b>{blog.likes} ♥️ </b>
           <button onClick={handleLikes}>Like</button>
         </p>
         <p>Added by: {blog.user.username}</p>
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <h3>{blog.title}</h3>
-      <p>
-        <i>Author: {blog.author}</i>
-      </p>
-      <a href={blog.url}>{blog.url}</a>
-      <p>
-        <b>{blog.likes} ♥️ </b>
-        <button onClick={handleLikes}>Like</button>
-      </p>
-      <p>Added by: {blog.user.username}</p>
+      </Togglable>
       {blog.user !== null}
       {blog.user.id === user.id && (
         <button onClick={handleDestroy}>Delete Blog</button>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Blog
+export default Blog;
