@@ -67,7 +67,7 @@ describe('Blog App', () => {
       await expect(page.getByText('Author: Test Author')).toBeVisible()
     })
 
-    test.only('A blog can be liked', async ({ page }) => {
+    test('A blog can be liked', async ({ page }) => {
       await page.getByRole('button', { name: 'Create new blog' }).click()
 
       await page.fill('input[name="Title"]', 'Test Blog')
@@ -79,6 +79,31 @@ describe('Blog App', () => {
       await page.getByRole('button', { name: 'Like' }).click()
 
       await expect(page.getByText('1 ♥️')).toBeVisible()
+    })
+
+    test.only('A blog can be deleted', async ({ page }) => {
+      await page.getByRole('button', { name: 'Create new blog' }).click()
+
+      await page.fill('input[name="Title"]', 'Test Blog')
+      await page.fill('input[name="Author"]', 'Test Author')
+      await page.fill('input[name="Url"]', 'http://testblog.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+
+      await page.getByRole('button', { name: 'View' }).click()
+      await page.getByRole('button', { name: 'Delete Blog' }).click()
+
+      page.on('dialog', async (dialog) => {
+        expect(dialog.message()).toBe(
+          'Are you sure you want to delete Test Blog by Test Author?'
+        )
+        await dialog.accept()
+      })
+
+      await expect(
+        page.getByText(
+          'Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'
+        )
+      ).toBeVisible()
     })
   })
 })

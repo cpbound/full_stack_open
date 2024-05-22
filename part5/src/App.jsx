@@ -88,6 +88,12 @@ const App = () => {
   const destroyBlog = async (id) => {
     await blogService.destroy(id)
     setBlogRefresh(!blogRefresh)
+    setInfoMessage(
+      'Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'
+    )
+    setTimeout(() => {
+      setInfoMessage(null)
+    }, 5000)
   }
 
   if (user === null) {
