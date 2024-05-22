@@ -2,7 +2,6 @@ const { test, describe, beforeEach, expect } = require('@playwright/test')
 
 describe('Blog App', () => {
   beforeEach(async ({ page, request }) => {
-
     await request.post('http:localhost:3001/api/testing/reset')
     await request.post('http:localhost:3001/api/users', {
       data: {
@@ -33,7 +32,9 @@ describe('Blog App', () => {
       await page.fill('input[name="Password"]', 'testpassword')
       await page.getByRole('button', { name: 'Login' }).click()
 
-      await expect(page.getByText('[|[| Test User logged in. |]|]')).toBeVisible()
+      await expect(
+        page.getByText('[|[| Test User logged in. |]|]')
+      ).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
@@ -45,14 +46,14 @@ describe('Blog App', () => {
     })
   })
 
-  describe ('When logged in', () => {
+  describe('When logged in', () => {
     beforeEach(async ({ page }) => {
       await page.fill('input[name="Username"]', 'testuser')
       await page.fill('input[name="Password"]', 'testpassword')
       await page.getByRole('button', { name: 'Login' }).click()
     })
 
-    test.only('A blog can be created', async ({ page }) => {
+    test('A blog can be created', async ({ page }) => {
       await page.getByRole('button', { name: 'Create new blog' }).click()
 
       await page.fill('input[name="Title"]', 'Test Blog')
@@ -60,10 +61,24 @@ describe('Blog App', () => {
       await page.fill('input[name="Url"]', 'http://testblog.com')
       await page.getByRole('button', { name: 'Create' }).click()
 
-      await expect(page.getByRole('heading', { name: 'Test Blog' })).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Test Blog' })
+      ).toBeVisible()
       await expect(page.getByText('Author: Test Author')).toBeVisible()
     })
 
+    test.only('A blog can be liked', async ({ page }) => {
+      await page.getByRole('button', { name: 'Create new blog' }).click()
 
+      await page.fill('input[name="Title"]', 'Test Blog')
+      await page.fill('input[name="Author"]', 'Test Author')
+      await page.fill('input[name="Url"]', 'http://testblog.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+
+      await page.getByRole('button', { name: 'View' }).click()
+      await page.getByRole('button', { name: 'Like' }).click()
+
+      await expect(page.getByText('1 ♥️')).toBeVisible()
+    })
   })
 })
