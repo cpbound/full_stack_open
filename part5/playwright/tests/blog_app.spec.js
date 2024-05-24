@@ -90,14 +90,16 @@ describe('Blog App', () => {
       await page.getByRole('button', { name: 'Create' }).click()
 
       await page.getByRole('button', { name: 'View' }).click()
-      await page.getByRole('button', { name: 'Delete Blog' }).click()
 
       page.on('dialog', async (dialog) => {
-        expect(dialog.message()).toBe(
+        expect(dialog.type()).toContain('confirm')
+        expect(dialog.message()).toContain(
           'Are you sure you want to delete Test Blog by Test Author?'
         )
         await dialog.accept()
       })
+
+      await page.getByRole('button', { name: 'Delete Blog' }).click()
 
       await expect(
         page.getByText(
