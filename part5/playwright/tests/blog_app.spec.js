@@ -10,6 +10,13 @@ describe('Blog App', () => {
         password: 'testpassword',
       },
     })
+    await request.post('http:localhost:3001/api/users', {
+      data: {
+        name: 'Anne Other',
+        username: 'AnneOther',
+        password: 'testpassword2',
+      }
+    })
 
     await page.goto('http://localhost:5173')
   })
@@ -81,7 +88,7 @@ describe('Blog App', () => {
       await expect(page.getByText('1 ♥️')).toBeVisible()
     })
 
-    test.only('A blog can be deleted', async ({ page }) => {
+    test('A blog can be deleted', async ({ page }) => {
       await page.getByRole('button', { name: 'Create new blog' }).click()
 
       await page.fill('input[name="Title"]', 'Test Blog')
@@ -107,5 +114,27 @@ describe('Blog App', () => {
         )
       ).toBeVisible()
     })
+
+    test.only('Only a user who created a blog can delete it', async ({ page }) => {
+
+      await page.getByRole('button', { name: 'Create new blog' }).click()
+
+      await page.fill('input[name="Title"]', 'Test Blog')
+      await page.fill('input[name="Author"]', 'Test Author')
+      await page.fill('input[name="Url"]', 'http://testblog.com')
+      await page.getByRole('button', { name: 'Create' }).click()
+
+      await page.getByRole('button', { name: 'Logout' }).click()
+
+      await page.fill('input[name="Username"]', 'AnneOther')
+      await page.fill('input[name="Password"]', 'testpassword2')
+      await page.getByRole('button', { name: 'Login' }).click()
+
+      await page.getByRole('button', { name: 'View' }).click()
+
+      await expect(page.getByRole('button', { name: 'Delete Blog' })).not.toBeVisible()
+    })
+
+
   })
 })
