@@ -38,7 +38,7 @@ const anecdoteSlice = createSlice({
       );
     },
     createAnecdote: (state, action) => {
-      const newAnecdote = action.payload;
+      const newAnecdote = asObject(action.payload);
       console.log(JSON.parse(JSON.stringify(state)));
       state.push(newAnecdote);
     },
