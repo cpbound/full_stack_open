@@ -5,10 +5,10 @@ const AnecdoteList = () => {
   const filter = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
-  console.log(filter.filter);
+  console.log(anecdotes, filter)
 
   const filteredAnecdotes = anecdotes.filter((anecdote) =>
-    anecdote.content.toLowerCase().includes(filter.filter.toLowerCase())
+    anecdote.content.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
