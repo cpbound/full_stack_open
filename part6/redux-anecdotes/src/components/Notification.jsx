@@ -6,17 +6,17 @@ const Notification = () => {
     border: 'solid',
     padding: 8,
     borderRadius: 8,
-    margin: 8,
+    margin: 24,
     borderWidth: 1
   }
 
-  if (!notification.message) {
+  if (!notification) {
     return null
   }
 
   return (
     <div style={style}>
-     {notification.message}
+     {notification}
     </div>
   )
 }
