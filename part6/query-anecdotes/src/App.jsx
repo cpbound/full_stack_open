@@ -1,22 +1,12 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import { getAnecdotes } from './requests'
-
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { getAnecdotes, createAnecdote } from './requests'
 const App = () => {
 
   const handleVote = (anecdote) => {
     console.log('vote')
   }
-
-  // const anecdotes = [
-  //   {
-  //     "content": "If it hurts, do it more often",
-  //     "id": "47145",
-  //     "votes": 0
-  //   },
-  // ]
 
   const result = useQuery({
     queryKey: ['anecdotes'],
