@@ -17,19 +17,29 @@ const AnecdoteForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["anecdotes"] });
     },
+    onError: (error) => {
+      setNotification(error.message);
+    }
   });
+
   const queryClient = useQueryClient();
 
   const addAnecdote = async (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
-    if (content.length < 5) {
-      console.log("Anecdote must be longer than 5 characters");
-      return;
+
+    // if (content.length < 5) {
+    //   setNotification("Anecdote must be longer than five characters");
+    //   return;
+    // }
+
+    try {
+      await newAnecdoteMutation.mutateAsync({ content, votes: 0 });
+      setNotification(`A new anecdote ${content} created`);
+    } catch (error) {
+      setNotification(error.message);
     }
-    setNotification(`A new anecdote ${content} created`);
-    newAnecdoteMutation.mutate({ content, votes: 0 });
   };
 
   return (
