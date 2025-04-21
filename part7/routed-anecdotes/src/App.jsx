@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import CreateAnecdote from "./components/CreateAnecdote"
+import CreateAnecdote from "./components/CreateAnecdote";
 import About from "./components/About";
 import AnecdoteList from "./components/AnecdoteList";
 import Anecdote from "./components/Anecdote";
@@ -30,6 +30,10 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`New anecdote '${anecdote.content}'created!`);
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -49,67 +53,37 @@ const App = () => {
     padding: 5,
   };
 
-  // const Menu = () => {
-  //   const padding = {
-  //     padding: 5,
-  //   };
-  //   return (
-  //     <Router>
-  //       <div>
-  //         <Link style={padding} to="/">
-  //           Anecdotes
-  //         </Link>
-  //         <Link style={padding} to="/create">
-  //           Create new
-  //         </Link>
-  //         <Link style={padding} to="/about">
-  //           About
-  //         </Link>
-  //       </div>
-
-  //       <Routes>
-  //         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-  //         <Route
-  //           path="/anecdotes/:id"
-  //           element={<Anecdote anecdotes={anecdotes} />}
-  //         />
-  //         <Route path="/create" element={<CreateAnecdote addNew={addNew} />} />
-  //         <Route path="/about" element={<About />} />
-  //       </Routes>
-  //     </Router>
-  //   );
-  // };
-
-
   return (
     <>
       <div>
         <h1>Software anecdotes</h1>
-        <Notification notification={[notification, setNotification]} />
-        {/* <Menu anecdotes={anecdotes} addNew={addNew} /> */}
+        <Notification notification={notification} />
         <Router>
-        <div>
-          <Link style={padding} to="/">
-            Anecdotes
-          </Link>
-          <Link style={padding} to="/create">
-            Create new
-          </Link>
-          <Link style={padding} to="/about">
-            About
-          </Link>
-        </div>
+          <div>
+            <Link style={padding} to="/">
+              Anecdotes
+            </Link>
+            <Link style={padding} to="/create">
+              Create new
+            </Link>
+            <Link style={padding} to="/about">
+              About
+            </Link>
+          </div>
 
-        <Routes>
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route
-            path="/anecdotes/:id"
-            element={<Anecdote anecdotes={anecdotes} />}
-          />
-          <Route path="/create" element={<CreateAnecdote addNew={addNew} />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </Router>
+          <Routes>
+            <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+            <Route
+              path="/anecdotes/:id"
+              element={<Anecdote anecdotes={anecdotes} />}
+            />
+            <Route
+              path="/create"
+              element={<CreateAnecdote addNew={addNew} />}
+            />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </Router>
       </div>
       <div>
         <Footer />

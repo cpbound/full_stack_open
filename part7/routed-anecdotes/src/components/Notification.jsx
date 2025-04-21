@@ -1,6 +1,5 @@
-const Notification = (props) => {
-  console.log("Notification", props);
-  const notification = "";
+const Notification = ({ notification }) => {
+  console.log("Notification",);
 
   const style = {
     border: "solid",
