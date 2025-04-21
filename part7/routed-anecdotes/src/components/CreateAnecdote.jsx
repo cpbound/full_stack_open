@@ -28,7 +28,7 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          author
+          Author
           <input
             name="author"
             value={author}
@@ -36,14 +36,14 @@ const CreateNew = (props) => {
           />
         </div>
         <div>
-          url for more info
+          Url for more info
           <input
             name="info"
             value={info}
             onChange={(e) => setInfo(e.target.value)}
           />
         </div>
-        <button>create</button>
+        <button>Create</button>
       </form>
     </div>
   );
