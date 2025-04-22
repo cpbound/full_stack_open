@@ -5,6 +5,7 @@ const Anecdote = ({ anecdotes }) => {
   return (
     <div>
       <h1>{anecdoteToShow.content}</h1>
+      <h3 style={{ fontStyle: "italic" }}>by {anecdoteToShow.author}</h3>
       <p>has {anecdoteToShow.votes} votes</p>
       <p>
         for more info see{" "}
