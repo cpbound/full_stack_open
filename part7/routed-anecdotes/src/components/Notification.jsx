@@ -1,6 +1,4 @@
 const Notification = ({ notification }) => {
-  console.log("Notification",);
-
   const style = {
     border: "solid",
     padding: 8,

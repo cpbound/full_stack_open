@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useField } from "../hooks";
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  // const [content, setContent] = useState("");
+  // const [author, setAuthor] = useState("");
+  // const [info, setInfo] = useState("");
+
+  const createContent = useField("text");
+  const createAuthor = useField("text");
+  const createInfo = useField("text");
 
   const navigate = useNavigate();
 
@@ -21,30 +26,30 @@ const CreateNew = (props) => {
 
   return (
     <div>
-      <h2>create a new anecdote</h2>
+      <h2>Create a New Anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          content
+          Content
           <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            type={createContent.type}
+            value={createContent.value}
+            onChange={createContent.onChange}
           />
         </div>
         <div>
           Author
           <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            type={createAuthor.type}
+            value={createAuthor.value}
+            onChange={createAuthor.onChange}
           />
         </div>
         <div>
-          Url for more info
+          URL for more info
           <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
+            type={createInfo.type}
+            value={createInfo.value}
+            onChange={createInfo.onChange}
           />
         </div>
         <button>Create</button>
