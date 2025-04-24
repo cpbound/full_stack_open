@@ -43,7 +43,10 @@ const App = () => {
       setUsername('')
       setPassword('')
       // -- Redux Notifications -- \\
-      dispatch(setNotificationMessage('Logged In Successfully (from Redux)'), 3)
+      dispatch(
+        setNotificationMessage('Logged In Successfully (from Redux)'),
+        3
+      )
     } catch (exception) {
       // -- Redux Notifications -- \\
       dispatch(setNotificationMessage('Wrong credentials (from Redux)'), 3)
@@ -60,18 +63,6 @@ const App = () => {
     setPassword('')
   }
 
-  const updateLikes = async (id, blogObject) => {
-    await blogService.update(id, blogObject)
-    setBlogRefresh(!blogRefresh)
-  }
-
-  const destroyBlog = async (id) => {
-    await blogService.destroy(id)
-    // -- Redux Notifications -- \\
-    dispatch(setNotificationMessage('Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'), 3)
-    setBlogRefresh(!blogRefresh)
-  }
-
   if (user === null) {
     return (
       <div>
@@ -85,12 +76,7 @@ const App = () => {
         />
         <h2>Blog List</h2>
         {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateLikes={updateLikes}
-            user={user}
-          />
+          <Blog key={blog.id} blog={blog} user={user} />
         ))}
       </div>
     )
@@ -114,13 +100,7 @@ const App = () => {
       </Togglable>
       <h2>Blog List</h2>
       {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          updateLikes={updateLikes}
-          user={user}
-          destroyBlog={destroyBlog}
-        />
+        <Blog key={blog.id} blog={blog} user={user} />
       ))}
     </div>
   )

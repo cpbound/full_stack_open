@@ -1,24 +1,14 @@
 import Togglable from './Togglable'
+import { useDispatch } from 'react-redux'
+import { likeBlog, removeBlog } from '../reducers/blogSlice'
+import { setNotificationMessage } from '../reducers/notificationSlice'
 
-const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
-  const handleLikes = () => {
-    const blogObject = {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-    }
-    updateLikes(blog.id, blogObject)
-  }
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch()
 
-  const handleDestroy = () => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${blog.title} by ${blog.author}?`
-      )
-    ) {
-      destroyBlog(blog.id)
-    }
+  const handleDestroy = (blog) => {
+    dispatch(removeBlog(blog))
+    dispatch(setNotificationMessage(`Deleted blog: ${blog.title} by ${blog.author}`, 5))
   }
 
   if (user === null) {
@@ -35,7 +25,7 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
             <a href={blog.url}>{blog.url}</a>
             <p>
               <b>{blog.likes} ♥️ </b>
-              <button onClick={handleLikes}>Like</button>
+              <button onClick={() => dispatch(likeBlog(blog))}>Like</button>
             </p>
             <p>Added by: {blog.user.username}</p>
           </div>
@@ -57,14 +47,14 @@ const Blog = ({ blog, updateLikes, destroyBlog, user }) => {
           <a href={blog.url}>{blog.url}</a>
           <p>
             <b>{blog.likes} ♥️ </b>
-            <button onClick={handleLikes}>Like</button>
+            <button onClick={() => dispatch(likeBlog(blog))}>Like</button>
           </p>
           <p>Added by: {blog.user.username}</p>
         </div>
       </Togglable>
       {blog.user !== null}
       {blog.user.id === user.id && (
-        <button onClick={handleDestroy}>Delete Blog</button>
+        <button onClick={() => handleDestroy(blog)}>Delete Blog</button>
       )}
     </div>
   )
