@@ -1,3 +1,4 @@
+/* eslint-disable no-trailing-spaces */
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Form from './components/Form'
@@ -6,6 +7,8 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useDispatch } from 'react-redux'
+import { setNotificationMessage } from './reducers/notificationSlice'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,6 +18,7 @@ const App = () => {
   const [infoMessage, setInfoMessage] = useState(null)
   const [blogRefresh, setBlogRefresh] = useState(false)
   const blogFormRef = useRef()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -41,27 +45,40 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setInfoMessage('Logged in successfully')
-      setTimeout(() => {
-        setInfoMessage(null)
-      }, 5000)
+      // -- Redux Notifications -- \\
+      dispatch(setNotificationMessage('Logged In Successfully (from Redux)'), 3)
+
+      // -- React notifications -- \\
+      // setInfoMessage('Logged in successfully')
+      // setTimeout(() => {
+      //   setInfoMessage(null)
+      // }, 5000)
     } catch (exception) {
-      setInfoMessage('Wrong credentials')
-      setTimeout(() => {
-        setInfoMessage(null)
-      }, 5000)
+      // -- Redux Notifications -- \\
+      dispatch(setNotificationMessage('Wrong credentials (from Redux)'), 3)
+
+      // -- React Notifications -- \\
+      // setInfoMessage('Wrong credentials')
+      // setTimeout(() => {
+      //   setInfoMessage(null)
+      // }, 5000)
     }
   }
 
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.clear()
-    setInfoMessage(
-      `Successfully Logged out. Y'all come back now y'hear, ${user.name}?`
-    )
-    setTimeout(() => {
-      setInfoMessage(null)
-    }, 5000)
+    // -- Redux Notifications -- \\
+    dispatch(setNotificationMessage('Logged Out Successfully (from Redux)'), 3)
+
+    // -- React notifications -- \\
+    // setInfoMessage(
+    //   `Successfully Logged out. Y'all come back now y'hear, ${user.name}?`
+    // )
+    // setTimeout(() => {
+    //   setInfoMessage(null)
+    // }, 5000)
+
     setUser(null)
     setUsername('')
     setPassword('')
@@ -71,12 +88,16 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog))
-      setInfoMessage(
-        `A blog with the title ${returnedBlog.title} has been added successfully.`
-      )
-      setTimeout(() => {
-        setInfoMessage(null)
-      }, 5000)
+      // -- Redux Notifications -- \\
+      dispatch(setNotificationMessage(`A blog with the title ${returnedBlog.title} has been added successfully.`), 3)
+
+      // -- React notifications -- \\
+      // setInfoMessage(
+      //   `A blog with the title ${returnedBlog.title} has been added successfully.`
+      // )
+      // setTimeout(() => {
+      //   setInfoMessage(null)
+      // }, 5000)
     })
   }
 
@@ -87,12 +108,16 @@ const App = () => {
 
   const destroyBlog = async (id) => {
     await blogService.destroy(id)
-    setInfoMessage(
-      'Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'
-    )
-    setTimeout(() => {
-      setInfoMessage(null)
-    }, 5000)
+    // -- Redux Notifications -- \\
+    dispatch(setNotificationMessage('Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'), 3)
+
+    // -- React notifications -- \\
+    // setInfoMessage(
+    //   'Blog deleted. Banned. Banned. Banned. Banned. Gone. Forever'
+    // )
+    // setTimeout(() => {
+    //   setInfoMessage(null)
+    // }, 5000)
     setBlogRefresh(!blogRefresh)
   }
 
