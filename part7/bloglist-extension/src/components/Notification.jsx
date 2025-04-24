@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux'
 // -- Redux Notifications -- \\
 const Notification = () => {
   const notification = useSelector((state) => state.notification)
-  console.log(notification)
   if (!notification) {
     return null
   } else if (notification.includes('Wrong')) {
@@ -13,7 +12,7 @@ const Notification = () => {
     return <div className="error">{notification}</div>
   }
   return <div className="info">{notification}</div>
-};
+}
 
 // -- React Notification -- \\
 // const Notification = ({ message }) => {

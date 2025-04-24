@@ -1,6 +1,12 @@
 import { useState } from 'react'
 
-const CreateBlogForm = ({ createBlog }) => {
+// -- Redux imports -- \\
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../reducers/blogSlice'
+import { setNotificationMessage } from '../reducers/notificationSlice'
+// -- End of Redux imports -- \\
+
+const CreateBlogForm = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -17,20 +23,25 @@ const CreateBlogForm = ({ createBlog }) => {
     setUrl(event.target.value)
   }
 
-  const newBlog = (event) => {
+  const dispatch = useDispatch()
+
+  const handleCreate = async (event) => {
     event.preventDefault()
-    createBlog({
+    const newBlog = {
       title: title,
       author: author,
       url: url,
-    })
+    }
+    console.log('creating blog')
+    dispatch(createBlog(newBlog))
+    dispatch(setNotificationMessage(`A blog with the title ${newBlog.title} has been added successfully.`), 3)
     setTitle('')
     setAuthor('')
     setUrl('')
   }
 
   return (
-    <form onSubmit={newBlog}>
+    <form onSubmit={handleCreate}>
       <div>
         <input type="text" name="Title" placeholder='Title' value={title} onChange={handleTitleChange} />
       </div>
