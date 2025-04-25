@@ -5,20 +5,18 @@ import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationMessage } from './reducers/notificationSlice'
+import { setUser, clearUser } from './reducers/userSlice'
 import { initializeBlogs } from './reducers/blogSlice'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [infoMessage, setInfoMessage] = useState(null)
-  const [blogRefresh, setBlogRefresh] = useState(false)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -28,51 +26,29 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
       blogService.setToken(user.token)
+      dispatch(setUser(user))
     }
-  }, [])
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      // -- Redux Notifications -- \\
-      dispatch(
-        setNotificationMessage('Logged In Successfully (from Redux)'),
-        3
-      )
-    } catch (exception) {
-      // -- Redux Notifications -- \\
-      dispatch(setNotificationMessage('Wrong credentials (from Redux)'), 3)
-    }
-  }
+  }, [dispatch])
 
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.clear()
-    // -- Redux Notifications -- \\
-    dispatch(setNotificationMessage('Logged Out Successfully (from Redux)'), 3)
+    dispatch(clearUser())
+    dispatch(setNotificationMessage('Logged Out Successfully'), 3)
     setUser(null)
     setUsername('')
     setPassword('')
   }
-
   if (user === null) {
     return (
       <div>
-        <Notification message={infoMessage} />
+        <Notification />
         <LoginForm
           username={username}
           password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          handleSubmit={handleLogin}
+          setUsername={setUsername}
+          setPassword={setPassword}
         />
         <h2>Blog List</h2>
         {blogs.map((blog) => (
@@ -84,7 +60,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={infoMessage} />
+      <Notification />
       <h2>
         [|[| <i>{user.name} logged in.</i> |]|]{' '}
       </h2>

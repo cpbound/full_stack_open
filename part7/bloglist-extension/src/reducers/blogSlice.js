@@ -39,7 +39,6 @@ export const createBlog = blog => {
 }
 
 export const likeBlog = blog => {
-  console.log('Like blog', blog)
   return async dispatch => {
     const updatedBlog = {
       ...blog,

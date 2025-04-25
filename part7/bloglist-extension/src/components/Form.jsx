@@ -1,10 +1,7 @@
 import { useState } from 'react'
-
-// -- Redux imports -- \\
 import { useDispatch } from 'react-redux'
 import { createBlog } from '../reducers/blogSlice'
 import { setNotificationMessage } from '../reducers/notificationSlice'
-// -- End of Redux imports -- \\
 
 const CreateBlogForm = () => {
   const [title, setTitle] = useState('')
@@ -32,15 +29,13 @@ const CreateBlogForm = () => {
       author: author,
       url: url,
     }
-    console.log('creating blog')
+
     dispatch(createBlog(newBlog))
     dispatch(setNotificationMessage(`A blog with the title ${newBlog.title} has been added successfully.`), 3)
     setTitle('')
     setAuthor('')
     setUrl('')
   }
-
-
 
   return (
     <form onSubmit={handleCreate}>
