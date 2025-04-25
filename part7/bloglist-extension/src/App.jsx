@@ -6,18 +6,17 @@ import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
-import { useDispatch, useSelector } from 'react-redux'
-import { setUser, clearUser } from './reducers/userSlice'
-import { useNotification } from './hooks/useNotification'
+import { useUserDispatch, useUserValue } from './contexts/UserContext'
+import { useNotification } from './contexts/NotificationContext'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const blogFormRef = useRef()
-  const dispatch = useDispatch()
   const notify = useNotification()
   // const blogs = useSelector((state) => state.blogs)
-  const user = useSelector((state) => state.user)
+  const user = useUserValue()
+  const userDispatch = useUserDispatch()
 
   const { data: blogs, isLoading } = useQuery({
     queryKey: ['blogs'],
@@ -29,19 +28,19 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       blogService.setToken(user.token)
-      dispatch(setUser(user))
+      userDispatch({ type: 'SET_USER', payload: user })
     }
-  }, [dispatch])
+  }, [userDispatch])
 
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.clear()
-    dispatch(clearUser())
+    userDispatch({ type: 'CLEAR_USER' })
     notify('Logged Out Successfully', 3)
-    setUser(null)
     setUsername('')
     setPassword('')
   }
+  console.log(user)
 
   if (isLoading) {
     return <div>Loading...</div>

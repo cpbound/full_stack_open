@@ -1,5 +1,5 @@
 import Togglable from './Togglable'
-import { useNotification } from '../hooks/useNotification'
+import { useNotification } from '../contexts/NotificationContext'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import blogService from '../services/blogs'
 
