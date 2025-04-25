@@ -1,25 +1,28 @@
 import { useDispatch } from 'react-redux'
 import { setUser } from '../reducers/userSlice'
-import { setNotificationMessage } from '../reducers/notificationSlice'
+// import { setNotificationMessage } from '../reducers/notificationSlice'
+import { useNotification } from '../hooks/useNotification'
 import login from '../services/login'
 import blogService from '../services/blogs'
 
 const LoginForm = ({ username, password, setUsername, setPassword }) => {
   const dispatch = useDispatch()
+  const notify = useNotification()
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     try {
       const user = await login({ username, password })
-      console.log('logged in', user)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       dispatch(setUser(user))
-      dispatch(setNotificationMessage('Logged in', 5))
+      // dispatch(setNotificationMessage('Logged in', 5))
+      notify('Logged in', 5)
       setUsername('')
       setPassword('')
     } catch (error) {
-      dispatch(setNotificationMessage('Wrong username or password', 5))
+      // dispatch(setNotificationMessage('Wrong username or password', 5))
+      notify('Wrong username or password', 5)
     }
   }
 

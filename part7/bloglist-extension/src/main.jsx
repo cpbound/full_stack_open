@@ -1,12 +1,14 @@
 import { Provider } from 'react-redux'
+import { NotificationContextProvider } from './contexts/NotificationContext'
 import store from './reducers/store'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
-{console.log(store)}
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <App />
+    <NotificationContextProvider>
+      <App />
+    </NotificationContextProvider>
   </Provider>
 )

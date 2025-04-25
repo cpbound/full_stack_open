@@ -2,13 +2,16 @@ import Togglable from './Togglable'
 import { useDispatch } from 'react-redux'
 import { likeBlog, removeBlog } from '../reducers/blogSlice'
 import { setNotificationMessage } from '../reducers/notificationSlice'
+import { useNotification } from '../hooks/useNotification'
 
 const Blog = ({ blog, user }) => {
   const dispatch = useDispatch()
+  const notify = useNotification()
 
   const handleDestroy = (blog) => {
+    console.log(blog)
+    notify((`Deleted blog: ${blog.title} by ${blog.author}`), 5)
     dispatch(removeBlog(blog))
-    dispatch(setNotificationMessage(`Deleted blog: ${blog.title} by ${blog.author}`, 5))
   }
 
   if (user === null) {

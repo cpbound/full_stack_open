@@ -9,12 +9,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setNotificationMessage } from './reducers/notificationSlice'
 import { setUser, clearUser } from './reducers/userSlice'
 import { initializeBlogs } from './reducers/blogSlice'
+import { useNotification } from './hooks/useNotification'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const blogFormRef = useRef()
   const dispatch = useDispatch()
+  const notify = useNotification()
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
 
@@ -35,7 +37,7 @@ const App = () => {
     event.preventDefault()
     window.localStorage.clear()
     dispatch(clearUser())
-    dispatch(setNotificationMessage('Logged Out Successfully'), 3)
+    notify(('Logged Out Successfully'), 3)
     setUser(null)
     setUsername('')
     setPassword('')

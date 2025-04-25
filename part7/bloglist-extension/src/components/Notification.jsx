@@ -1,12 +1,12 @@
-
-import { useSelector } from 'react-redux'
+import { useContext } from 'react'
+import NotificationContext from '../contexts/NotificationContext'
 
 const Notification = () => {
-  const notification = useSelector((state) => state.notification)
-  if (!notification) {
+  const notification = useContext(NotificationContext)
+  console.log(notification)
+  if (!notification[0]) {
     return null
-  } else if (notification.includes('Wrong')) {
-    console.log('failed')
+  } else if (notification[0].includes('Wrong')) {
     return <div className="error">{notification}</div>
   }
   return <div className="info">{notification}</div>
