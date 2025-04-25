@@ -1,17 +1,48 @@
 import Togglable from './Togglable'
-import { useDispatch } from 'react-redux'
-import { likeBlog, removeBlog } from '../reducers/blogSlice'
-import { setNotificationMessage } from '../reducers/notificationSlice'
 import { useNotification } from '../hooks/useNotification'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import blogService from '../services/blogs'
 
 const Blog = ({ blog, user }) => {
-  const dispatch = useDispatch()
   const notify = useNotification()
+  const queryClient = useQueryClient()
+
+  const likeMutation = useMutation({
+    mutationFn: async (updatedBlog) => {
+      return await blogService.update(blog.id, updatedBlog)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
+  const destroyMutation = useMutation({
+    mutationFn: async (id) => {
+      return await blogService.destroy(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
+  const handleLike = () => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id,
+    }
+
+    likeMutation.mutate(updatedBlog)
+  }
 
   const handleDestroy = (blog) => {
-    console.log(blog)
-    notify((`Deleted blog: ${blog.title} by ${blog.author}`), 5)
-    dispatch(removeBlog(blog))
+    const confirm = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}?`
+    )
+    if (confirm) {
+      destroyMutation.mutate(blog.id)
+      notify(`Deleted blog: ${blog.title} by ${blog.author}`, 5)
+    }
   }
 
   if (user === null) {
@@ -28,7 +59,7 @@ const Blog = ({ blog, user }) => {
             <a href={blog.url}>{blog.url}</a>
             <p>
               <b>{blog.likes} ♥️ </b>
-              <button onClick={() => dispatch(likeBlog(blog))}>Like</button>
+              <button onClick={handleLike}>Like</button>
             </p>
             <p>Added by: {blog.user.username}</p>
           </div>
@@ -50,7 +81,7 @@ const Blog = ({ blog, user }) => {
           <a href={blog.url}>{blog.url}</a>
           <p>
             <b>{blog.likes} ♥️ </b>
-            <button onClick={() => dispatch(likeBlog(blog))}>Like</button>
+            <button onClick={handleLike}>Like</button>
           </p>
           <p>Added by: {blog.user.username}</p>
         </div>

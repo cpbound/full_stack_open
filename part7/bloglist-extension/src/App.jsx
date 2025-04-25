@@ -7,9 +7,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import { useDispatch, useSelector } from 'react-redux'
-import { setNotificationMessage } from './reducers/notificationSlice'
 import { setUser, clearUser } from './reducers/userSlice'
-import { initializeBlogs } from './reducers/blogSlice'
 import { useNotification } from './hooks/useNotification'
 
 const App = () => {
@@ -25,7 +23,6 @@ const App = () => {
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
   })
-  console.log(blogs)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')

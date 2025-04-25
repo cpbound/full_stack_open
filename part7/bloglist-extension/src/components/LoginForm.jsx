@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux'
 import { setUser } from '../reducers/userSlice'
-// import { setNotificationMessage } from '../reducers/notificationSlice'
 import { useNotification } from '../hooks/useNotification'
 import login from '../services/login'
 import blogService from '../services/blogs'
