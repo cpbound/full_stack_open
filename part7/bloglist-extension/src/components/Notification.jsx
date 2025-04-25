@@ -3,7 +3,6 @@ import NotificationContext from '../contexts/NotificationContext'
 
 const Notification = () => {
   const notification = useContext(NotificationContext)
-  console.log(notification)
   if (!notification[0]) {
     return null
   } else if (notification[0].includes('Wrong')) {

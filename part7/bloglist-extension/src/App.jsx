@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import Blog from './components/Blog'
 import Form from './components/Form'
 import LoginForm from './components/LoginForm'
@@ -17,12 +18,14 @@ const App = () => {
   const blogFormRef = useRef()
   const dispatch = useDispatch()
   const notify = useNotification()
-  const blogs = useSelector((state) => state.blogs)
+  // const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
 
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
+  const { data: blogs, isLoading } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+  })
+  console.log(blogs)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -37,10 +40,14 @@ const App = () => {
     event.preventDefault()
     window.localStorage.clear()
     dispatch(clearUser())
-    notify(('Logged Out Successfully'), 3)
+    notify('Logged Out Successfully', 3)
     setUser(null)
     setUsername('')
     setPassword('')
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
   }
   if (user === null) {
     return (
