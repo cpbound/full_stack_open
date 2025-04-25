@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useUserDispatch, useUserValue } from './contexts/UserContext'
+import { useNotification } from './contexts/NotificationContext'
 import Blog from './components/Blog'
 import Form from './components/Form'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
-import { useUserDispatch, useUserValue } from './contexts/UserContext'
-import { useNotification } from './contexts/NotificationContext'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const blogFormRef = useRef()
   const notify = useNotification()
-  // const blogs = useSelector((state) => state.blogs)
   const user = useUserValue()
   const userDispatch = useUserDispatch()
 
@@ -40,7 +39,6 @@ const App = () => {
     setUsername('')
     setPassword('')
   }
-  console.log(user)
 
   if (isLoading) {
     return <div>Loading...</div>
