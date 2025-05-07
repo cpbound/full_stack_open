@@ -77,6 +77,7 @@ const App = () => {
         <Route path='/' element={<BlogList blogs={blogs} user={user} />} />
         <Route path="/users" element={<Users blogs={blogs} />} />
         <Route path='/users/:id' element={<User blogs={blogs} />} />
+        <Route path='/blogs/:id' element={<Blog blogs={blogs} />} />
       </Routes>
     </div>
   )
