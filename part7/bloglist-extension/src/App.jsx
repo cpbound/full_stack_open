@@ -11,6 +11,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import Users from './components/Users'
+import User from './components/User'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -75,8 +76,8 @@ const App = () => {
       <Routes>
         <Route path='/' element={<BlogList blogs={blogs} user={user} />} />
         <Route path="/users" element={<Users blogs={blogs} />} />
+        <Route path='/users/:id' element={<User blogs={blogs} />} />
       </Routes>
-      {/* <BlogList blogs={blogs} user={user} /> */}
     </div>
   )
 }
