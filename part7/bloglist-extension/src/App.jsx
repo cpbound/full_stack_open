@@ -12,6 +12,7 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import Users from './components/Users'
 import User from './components/User'
+import Navigation from './components/Navigation'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -49,6 +50,7 @@ const App = () => {
   }
   return (
     <div>
+      <Navigation user={user} handleLogout={handleLogout} />
       <Notification />
       <h1>Blogs</h1>
       {!user ? (
@@ -60,10 +62,6 @@ const App = () => {
         />
       ) : (
         <>
-          <h2>
-            [|[| <i>{user.name} logged in.</i> |]|]{' '}
-          </h2>
-          <button onClick={handleLogout}>Log Out</button>
           <Togglable
             buttonLabel="Create New Blog"
             buttonClose={'Cancel'}

@@ -19,11 +19,14 @@
 }
 
 .blogStyle {
-  color: black;
-  background: aliceblue;
-  font-size: 20px;
-  border-style: solid;
+  background: gainsboro;
   border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 8px;
+  padding: 6px
+}
+
+.navStyle {
+  color: black;
+  background: lightsteelblue;
+  border-radius: 8px;
+  padding: 1px;
 }
