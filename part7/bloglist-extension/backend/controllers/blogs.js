@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken')
 const router = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const { request, response } = require('express')
+const blog = require('../models/blog')
 const userExtractor = require('../utils/middleware').userExtractor
 
 router.get('/', async (request, response) => {
@@ -72,5 +74,25 @@ router.put('/:id', async (request, response) => {
   })
   response.json(updatedBlog)
 })
+
+router.post('/:id/comments', async (request, response) => {
+  const { comment } = request.body
+
+  if (!comment) {
+    return response.status(400).json({ error: 'comment missing' })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+
+  blog.comments = blog.comments.concat(comment)
+  const updatedBlog = await blog.save()
+
+  response.status(201).json(updatedBlog)
+})
+
 
 module.exports = router

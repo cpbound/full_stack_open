@@ -1,12 +1,13 @@
-import Togglable from './Togglable'
 import { useNotification } from '../contexts/NotificationContext'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import blogService from '../services/blogs'
 import { useParams } from 'react-router-dom'
+import { useState } from 'react'
+import blogService from '../services/blogs'
 
 const Blog = ({ blogs }) => {
   const notify = useNotification()
   const queryClient = useQueryClient()
+  const [comment, setComment] = useState('')
 
   const likeMutation = useMutation({
     mutationFn: async (updatedBlog) => {
@@ -14,6 +15,16 @@ const Blog = ({ blogs }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
+  const commentMutation = useMutation({
+    mutationFn: async (comment) => {
+      return await blogService.addComment(blog.id, comment)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      setComment('')
     },
   })
 
@@ -25,6 +36,11 @@ const Blog = ({ blogs }) => {
     }
 
     likeMutation.mutate(updatedBlog)
+  }
+
+  const handleComment = (e) => {
+    e.preventDefault()
+    commentMutation.mutate({ id: blog.id, comment })
   }
 
   const { id } = useParams()
@@ -43,6 +59,13 @@ const Blog = ({ blogs }) => {
       </p>
       <p>Added by: {blog.user.username}</p>
       <h3>Comments</h3>
+      <form onSubmit={handleComment}>
+        <input
+          value={comment}
+          onChange={({ target }) => setComment(target.value)}
+        />
+        <button type="submit">Add Comment</button>
+      </form>
       {blog.comments && blog.comments.length > 0 ? (
         <ul>
           {blog.comments.map((comment) => (
