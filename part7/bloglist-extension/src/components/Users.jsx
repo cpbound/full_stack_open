@@ -1,4 +1,15 @@
 import { Link } from 'react-router-dom'
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Typography,
+  TableContainer,
+  Link as MuiLink,
+} from '@mui/material'
 
 const Users = ({ blogs }) => {
   const usersMap = blogs.reduce((acc, blog) => {
@@ -12,30 +23,40 @@ const Users = ({ blogs }) => {
 
   const users = Object.values(usersMap)
 
-  console.log(users)
-
   return (
-    <div>
-      <h2>Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
+    <TableContainer component={Paper} sx={{ maxWidth: 700, mx: 'auto', mt: 4 }}>
+      <Typography variant="h4" sx={{ p: 2 }}>
+        Users
+      </Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              <strong>User</strong>
+            </TableCell>
+            <TableCell>
+              <strong>Blogs Created</strong>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {users.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </td>
-              <td>{user.blogs}</td>
-            </tr>
+            <TableRow key={user.id}>
+              <TableCell>
+                <MuiLink
+                  component={Link}
+                  to={`/users/${user.id}`}
+                  underline="hover"
+                >
+                  {user.name}
+                </MuiLink>
+              </TableCell>
+              <TableCell>{user.blogs}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
 

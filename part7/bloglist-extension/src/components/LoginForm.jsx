@@ -2,6 +2,7 @@ import { useUserDispatch } from '../contexts/UserContext'
 import { useNotification } from '../contexts/NotificationContext'
 import login from '../services/login'
 import blogService from '../services/blogs'
+import { Paper, Box, Typography, TextField, Button } from '@mui/material'
 
 const LoginForm = ({ username, password, setUsername, setPassword }) => {
   const userDispatch = useUserDispatch()
@@ -23,31 +24,36 @@ const LoginForm = ({ username, password, setUsername, setPassword }) => {
   }
 
   return (
-    <>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-
-          />
-        </div>
-        <div>
-          Password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </>
+    <Box display="flex" justifyContent="center" mt={6}>
+      <Paper elevation={3} sx={{ p: 4, width: 400 }}>
+        <Typography variant="h5" gutterBottom>
+          Login
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <Box mb={2}>
+            <TextField
+              fullWidth
+              type="text"
+              value={username}
+              label="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </Box>
+          <Box mb={2}>
+            <TextField
+              fullWidth
+              type="password"
+              value={password}
+              label="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </Box>
+          <Button variant="contained" fullWidth type="submit">
+            Login
+          </Button>
+        </form>
+      </Paper>
+    </Box>
   )
 }
 

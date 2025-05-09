@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNotification } from '../contexts/NotificationContext'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import blogService from '../services/blogs'
+import { TextField, Button, Box, Paper } from '@mui/material'
 
 const CreateBlogForm = () => {
   const [title, setTitle] = useState('')
@@ -14,7 +15,7 @@ const CreateBlogForm = () => {
     mutationFn: blogService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
-    }
+    },
   })
 
   const handleTitleChange = (event) => {
@@ -35,26 +36,48 @@ const CreateBlogForm = () => {
       url: url,
     }
     newBlogMutation.mutate(newBlog)
-    notify((`A blog with the title ${newBlog.title} has been added successfully.`), 3)
+    notify(
+      `A blog with the title ${newBlog.title} has been added successfully.`,
+      3
+    )
     setTitle('')
     setAuthor('')
     setUrl('')
   }
 
   return (
-    <form onSubmit={handleCreate}>
-      <div>
-        <input type="text" name="Title" placeholder='Title' value={title} onChange={handleTitleChange} />
-      </div>
-      <div>
-        <input type="text" name="Author" placeholder='Author' value={author} onChange={handleAuthorChange} />
-      </div>
-      <div>
-        <input type="text" name="Url" placeholder='URL' value={url} onChange={handleUrlChange} />
-      </div>
-      <br />
-      <button type="click">Create</button>
-    </form>
+    <Paper elevation={3} sx={{ p: 4, width: 400 }}>
+      <Box
+        component="form"
+        onSubmit={handleCreate}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 400 }}
+      >
+        <TextField
+          label="Title"
+          name="Title"
+          value={title}
+          onChange={handleTitleChange}
+          fullWidth
+        />
+        <TextField
+          label="Author"
+          name="Author"
+          value={author}
+          onChange={handleAuthorChange}
+          fullWidth
+        />
+        <TextField
+          label="URL"
+          name="Url"
+          value={url}
+          onChange={handleUrlChange}
+          fullWidth
+        />
+        <Button type="submit" variant="contained">
+          Create
+        </Button>
+      </Box>
+    </Paper>
   )
 }
 
