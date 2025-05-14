@@ -101,7 +101,7 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
     genres: [String!]
     id: ID!
   },
@@ -160,9 +160,34 @@ const resolvers = {
       });
     },
   },
+  Book: {
+    author: (root) => {
+      return authors.find((author) => author.name === root.author) || null;
+    },
+  },
+
+  Author: {
+    bookCount: (root) => {
+      return books.filter((book) => book.author === root.name).length;
+    },
+  },
+
   Mutation: {
     addBook: (root, args) => {
-      const book = { ...args, id: uuid() };
+      let author = authors.find((a) => a.name === args.author);
+
+      if (!author) {
+        author = { name: args.author, id: uuid(), bookCount: 1 };
+        authors = authors.concat(author);
+      }
+
+      const book = {
+        title: args.title,
+        author: author.name,
+        published: args.published,
+        genres: args.genres,
+        id: uuid(),
+      };
       books = books.concat(book);
       return book;
     },
