@@ -16,21 +16,12 @@ const NewBook = () => {
     },
   });
 
-  console.log({
-    title,
-    author,
-    published: Number(published),
-    genres,
-  });
-
   const submit = async (event) => {
     event.preventDefault();
 
     addBook({
       variables: { title, author, published: Number(published), genres },
     });
-
-    console.log("add book...");
 
     setTitle("");
     setPublished("");

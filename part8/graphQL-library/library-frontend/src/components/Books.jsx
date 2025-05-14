@@ -5,7 +5,6 @@ const Books = () => {
   const result = useQuery(ALL_BOOKS);
 
   if (!result.data) return <div>loading...</div>;
-  console.log("allbooks", result.data.allBooks);
 
   return (
     <div>
