@@ -1,10 +1,12 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 // import { v1: uuidv1 } from "uuid";
 import Author from "./src/models/author.js";
 import Book from "./src/models/book.js";
+import User from "./src/models/user.js";
 import { GraphQLError } from "graphql";
 
 dotenv.config();
@@ -109,11 +111,22 @@ const typeDefs = `
     id: ID!
   },
 
+  type User {
+    username: String!
+    favoriteGenre: String!
+    id: ID!
+  },
+
+  type Token {
+    value: String!
+  },
+
   type Query {
     authorCount: Int!
     bookCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   },
 
   type Mutation {
@@ -127,6 +140,14 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ): Author
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
     `;
 
@@ -167,6 +188,9 @@ const resolvers = {
         };
       });
     },
+    me: (root, args, context) => {
+      return context.currentUser;
+    },
   },
 
   Author: {
@@ -176,7 +200,14 @@ const resolvers = {
   },
 
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not authenticated", {
+          extensions: {
+            code: "UNAUTHENTICATED",
+          },
+        });
+      }
       try {
         let author = await Author.findOne({ name: args.author });
 
@@ -196,7 +227,7 @@ const resolvers = {
         await book.populate("author");
         return book;
       } catch (error) {
-        throw new GraphQLError("Creation failed", {
+        throw new GraphQLError("Author creation failed", {
           extensions: {
             code: "BAD_USER_INPUT",
             invalidArgs: args,
@@ -206,7 +237,12 @@ const resolvers = {
       }
     },
 
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not authenticated", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
       try {
         const author = await Author.findOne({ name: args.name });
         if (!author) return null;
@@ -224,6 +260,36 @@ const resolvers = {
         });
       }
     },
+
+    createUser: async (root, args) => {
+      try {
+        const user = new User({
+          username: args.username,
+          favoriteGenre: args.favoriteGenre,
+        });
+        await user.save();
+        return user;
+      } catch (error) {
+        throw new GraphQLError("User creation failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args,
+            error,
+          },
+        });
+      }
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+      if (!user || args.password !== "secret") {
+        return null;
+      }
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      };
+      return { value: jwt.sign(userForToken, JWT_SECRET) };
+    },
   },
 };
 
@@ -234,12 +300,22 @@ const server = new ApolloServer({
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
     console.log("connected to MongoDB");
     startStandaloneServer(server, {
       listen: { port: 4000 },
+      context: async ({ req }) => {
+        const auth = req ? req.headers.authorization : null;
+        if (auth && auth.toLowerCase().startsWith("bearer ")) {
+          const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
+          const currentUser = await User.findById(decodedToken.id);
+          return { currentUser };
+        }
+      },
     }).then(({ url }) => {
       console.log(`Server ready at ${url}`);
     });
