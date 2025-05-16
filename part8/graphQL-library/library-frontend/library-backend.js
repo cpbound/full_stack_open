@@ -5,6 +5,7 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 // import { v1: uuidv1 } from "uuid";
 import Author from "./src/models/author.js";
 import Book from "./src/models/book.js";
+import { GraphQLError } from "graphql";
 
 dotenv.config();
 
@@ -176,35 +177,52 @@ const resolvers = {
 
   Mutation: {
     addBook: async (root, args) => {
-      console.log(
-        "Mongoose connection readyState:",
-        mongoose.connection.readyState
-      );
+      try {
+        let author = await Author.findOne({ name: args.author });
 
-      let author = await Author.findOne({ name: args.author });
+        if (!author) {
+          author = new Author({ name: args.author });
+          await author.save();
+        }
 
-      if (!author) {
-        author = new Author({ name: args.author });
-        await author.save();
+        const book = new Book({
+          title: args.title,
+          author: author._id,
+          published: args.published,
+          genres: args.genres,
+        });
+
+        await book.save();
+        await book.populate("author");
+        return book;
+      } catch (error) {
+        throw new GraphQLError("Creation failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args,
+            error,
+          },
+        });
       }
-
-      const book = new Book({
-        title: args.title,
-        author: author._id,
-        published: args.published,
-        genres: args.genres,
-      });
-
-      await book.save();
-      await book.populate("author");
-      return book;
     },
+
     editAuthor: async (root, args) => {
-      const author = await Author.findOne({ name: args.name });
-      if (!author) return null;
-      author.born = args.setBornTo;
-      await author.save();
-      return author;
+      try {
+        const author = await Author.findOne({ name: args.name });
+        if (!author) return null;
+
+        author.born = args.setBornTo;
+        await author.save();
+        return author;
+      } catch (error) {
+        throw new GraphQLError("Author edit failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args,
+            error,
+          },
+        });
+      }
     },
   },
 };
