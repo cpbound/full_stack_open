@@ -1,9 +1,12 @@
-import { ApolloServer } from "@apollo/server";
+import dotenv from "dotenv";
 import mongoose from "mongoose";
+import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 // import { v1: uuidv1 } from "uuid";
 import Author from "./src/models/author.js";
 import Book from "./src/models/book.js";
+
+dotenv.config();
 
 let authors = [
   {
@@ -130,38 +133,38 @@ const resolvers = {
   Query: {
     authorCount: () => authors.length,
     bookCount: () => books.length,
-    allBooks: (root, args) => {
-      let filteredBooks = books;
+    allBooks: async (root, args) => {
+      let filter = {};
+
+      if (args.genre) {
+        filter.genres = { $in: [args.genre] };
+      }
 
       if (args.author) {
-        filteredBooks = filteredBooks.filter(
-          (book) => book.author === args.author
-        );
+        const author = await Author.findOne({ name: args.author });
+        if (!author) return [];
+        filter.author = author._id;
       }
-      if (args.genre) {
-        filteredBooks = filteredBooks.filter((book) =>
-          book.genres.includes(args.genre)
-        );
-      }
-      return filteredBooks;
+
+      const books = await Book.find(filter).populate("author");
+
+      return books;
     },
-    allAuthors: () => {
+    allAuthors: async () => {
+      const authors = await Author.find({});
+      const books = await Book.find({}).populate("author");
+
       return authors.map((author) => {
         const count = books.filter(
           (book) => book.author === author.name
         ).length;
         return {
           name: author.name,
-          born: author.born || null,
+          born: author.born,
           bookCount: count,
-          id: author.id,
+          id: author._id,
         };
       });
-    },
-  },
-  Book: {
-    author: (root) => {
-      return root.author
     },
   },
 
@@ -194,19 +197,14 @@ const resolvers = {
 
       await book.save();
       await book.populate("author");
-      console.log("📘 Book after population:", book);
       return book;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find((a) => a.name === args.name);
-      if (!author) {
-        return null;
-      }
-
-      const updatedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a));
-
-      return updatedAuthor;
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name });
+      if (!author) return null;
+      author.born = args.setBornTo;
+      await author.save();
+      return author;
     },
   },
 };
@@ -216,8 +214,7 @@ const server = new ApolloServer({
   resolvers,
 });
 
-const MONGODB_URI = process.env.MONGODB_URI
-
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose
   .connect(MONGODB_URI)
@@ -227,9 +224,6 @@ mongoose
       listen: { port: 4000 },
     }).then(({ url }) => {
       console.log(`Server ready at ${url}`);
-      mongoose.connection.once("open", () => {
-        console.log("✅ Mongoose connection open");
-      });
     });
   })
   .catch((error) => {
