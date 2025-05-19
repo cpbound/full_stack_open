@@ -5,6 +5,7 @@ import Authors from "./components/Authors";
 import LoginForm from "./components/LoginForm";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
+import Recommendations from "./components/Recommendations";
 import Notification from "./components/Notification";
 
 const App = () => {
@@ -79,6 +80,14 @@ const App = () => {
                   Add book
                 </Link>
               </button>
+              <button>
+                <Link
+                  style={{ textDecoration: "none", color: "inherit" }}
+                  to="/recommendations"
+                >
+                  Recommendations
+                </Link>
+              </button>
             </nav>
           </div>
         )}
@@ -86,6 +95,7 @@ const App = () => {
           <Route path="/authors" element={<Authors />} />
           <Route path="/books" element={<Books />} />
           <Route path="/add" element={<NewBook />} />
+          <Route path="/recommendations" element={<Recommendations />} />
           <Route path="/" element={<Authors />} />
         </Routes>
       </div>
