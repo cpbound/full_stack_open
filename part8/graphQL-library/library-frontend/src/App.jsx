@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Authors from "./components/Authors";
@@ -24,8 +24,6 @@ const App = () => {
     localStorage.clear();
     client.resetStore();
   };
-
-  console.log(localStorage, client)
 
   return (
     <Router>
