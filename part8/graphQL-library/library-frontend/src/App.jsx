@@ -26,6 +26,8 @@ const App = () => {
     client.resetStore();
   };
 
+  console.log(token)
+
   return (
     <Router>
       <Notification notification={error} />

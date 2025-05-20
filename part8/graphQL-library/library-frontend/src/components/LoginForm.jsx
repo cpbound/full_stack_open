@@ -23,7 +23,6 @@ const LoginForm = ({ setToken }) => {
   const submit = async (event) => {
     event.preventDefault();
     login({ variables: { username, password } });
-    console.log(username);
     setUsername("");
     setPassword("");
   };
