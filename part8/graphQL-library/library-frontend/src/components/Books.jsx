@@ -3,18 +3,20 @@ import { useState } from "react";
 import { ALL_BOOKS } from "../queries";
 
 const Books = () => {
-  const result = useQuery(ALL_BOOKS);
   const [genre, setGenre] = useState(null);
+  const { data } = useQuery(ALL_BOOKS, {
+    variables: { genre },
+  });
 
-  if (!result.data) return <div>loading...</div>;
+  const allGenres = useQuery(ALL_BOOKS);
+
+  if (!data || !allGenres) return <div>loading...</div>;
 
   const genres = [
-    ...new Set(result.data?.allBooks.flatMap((book) => book.genres)),
+    ...new Set(allGenres.data?.allBooks.flatMap((book) => book.genres)),
   ];
 
-  const filteredBooks = genre
-    ? result.data?.allBooks.filter((book) => book.genres.includes(genre))
-    : result.data?.allBooks;
+  const filteredBooks = data?.allBooks;
 
   return (
     <div>
