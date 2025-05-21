@@ -3,6 +3,8 @@ import Book from "./src/models/book.js";
 import User from "./src/models/user.js";
 import jwt from "jsonwebtoken";
 import { GraphQLError } from "graphql";
+import { PubSub } from "graphql-subscriptions";
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
@@ -78,7 +80,11 @@ const resolvers = {
         });
 
         await book.save();
-        await book.populate("author");
+
+        const populatedBook = await book.populate("author");
+
+        pubsub.publish("BOOK_ADDED", { bookAdded: populatedBook });
+
         return book;
       } catch (error) {
         throw new GraphQLError("Author creation failed", {
@@ -148,6 +154,11 @@ const resolvers = {
         id: user._id,
       };
       return { value: sign(userForToken, JWT_SECRET) };
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator("BOOK_ADDED"),
     },
   },
 };

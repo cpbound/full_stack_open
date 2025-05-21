@@ -1,5 +1,8 @@
+/* eslint-disable no-undef */
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
+import { WebSocketServer } from "ws";
+import { makeServer } from "graphql-ws";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import express from "express";
@@ -32,30 +35,65 @@ const start = async () => {
   const app = express();
   const httpServer = http.createServer(app);
 
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: "/graphql",
+  });
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const serverCleanup = makeServer(
+    {
+      schema,
+      context: async (ctx, msg, args) => {
+        const auth = ctx.extra.request?.headers?.authorization;
+        if (auth && auth.toLowerCase().startsWith("bearer ")) {
+          try {
+            const token = auth.substring(7);
+            const decodedToken = jwt.verify(token, JWT_SECRET);
+            const currentUser = await User.findById(decodedToken.id);
+            return { currentUser };
+          } catch (error) {
+            console.log("WS JWT verification error:", error.message);
+          }
+        }
+        return {};
+      },
+    },
+    wsServer
+  );
+
   const server = new ApolloServer({
-    schema: makeExecutableSchema({ typeDefs, resolvers }),
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
   });
 
   await server.start();
 
   app.use(
-    "/",
+    "/graphql",
     cors(),
     express.json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
         const auth = req ? req.headers.authorization : null;
-        console.log("Auth header received:", auth);
 
         if (auth && auth.toLowerCase().startsWith("bearer ")) {
           try {
             const token = auth.substring(7);
             const decodedToken = jwt.verify(token, JWT_SECRET);
-            console.log("Decoded token:", decodedToken);
 
             const currentUser = await User.findById(decodedToken.id);
-            console.log("Found currentUser:", currentUser);
 
             return { currentUser };
           } catch (error) {
