@@ -8,7 +8,38 @@ interface Result {
   average: number;
 }
 
-const calculateExercises = (dailyExercises: number[], targetHours: number): Result => {
+interface ExerciseValues {
+  dailyExercises: number[];
+  targetHours: number;
+}
+
+const parseInput = (args: string[]): ExerciseValues => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+
+  const dailyHoursInput = args.slice(2);
+  const inputToNumber = dailyHoursInput.map(Number);
+
+  if (inputToNumber.some(isNaN)) {
+    throw new Error("Provided values were not numbers!");
+  }
+
+  const targetHours = inputToNumber[inputToNumber.length - 1];
+  const dailyExercises = inputToNumber.slice(0, -1);
+
+  if (dailyExercises.length !== inputToNumber.length - 1) {
+    throw new Error("Please provide daily exercise hours!");
+  }
+
+  return {
+    dailyExercises,
+    targetHours,
+  };
+};
+
+const calculateExercises = (
+  dailyExercises: number[],
+  targetHours: number
+): Result => {
   const periodLength = dailyExercises.length;
   const trainingDays = dailyExercises.filter((day) => day > 0).length;
   const average = dailyExercises.reduce((a, b) => a + b, 0) / periodLength;
@@ -17,7 +48,7 @@ const calculateExercises = (dailyExercises: number[], targetHours: number): Resu
   let ratingDescription = "";
 
   if (average >= targetHours) {
-    rating = 3
+    rating = 3;
     ratingDescription = "You hit your target hours!";
   } else if (average >= targetHours / 2) {
     rating = 2;
@@ -36,6 +67,17 @@ const calculateExercises = (dailyExercises: number[], targetHours: number): Resu
     targetHours,
     average,
   };
+};
+
+try {
+  const { dailyExercises, targetHours } = parseInput(process.argv);
+  console.log(calculateExercises(dailyExercises, targetHours));
+} catch (error: unknown) {
+  let errorMessage = "Something bad happened.";
+  if (error instanceof Error) {
+    errorMessage += " Error: " + error.message;
+  }
+  console.log(errorMessage);
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+console.log(calculateExercises);
