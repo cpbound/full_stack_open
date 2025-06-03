@@ -15,6 +15,7 @@
     "start": "ts-node index.ts"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^4.4.0",
     "@types/express": "^4.17.22",
     "@types/node": "^22.15.21",
     "ts-node": "^10.9.2",
