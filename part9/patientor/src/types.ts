@@ -13,14 +13,12 @@ export interface Patient {
   occupation: string;
 }
 
-// const getNonSensitivePatient = (patient: Patient): Omit<Patient, 'ssn'> => {
-//   return {
-//     id: patient.id,
-//     name: patient.name,
-//     dateOfBirth: patient.dateOfBirth,
-//     gender: patient.gender,
-//     occupation: patient.occupation
-//   };
-// };
-
 export type NonSensitivePatient = Omit<Patient, 'ssn'>;
+
+export type NewPatient = Omit<Patient, 'id'>;
+
+export enum Gender {
+  Male = "male",
+  Female = "female",
+  Other = "other"
+}
