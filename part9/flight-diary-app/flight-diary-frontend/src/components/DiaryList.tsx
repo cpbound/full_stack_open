@@ -1,23 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { getAllDiaries } from "../services/diaries";
 import type { DiaryEntry } from "../types";
 
-const App = () => {
-  const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
-
-  useEffect(() => {
-    getAllDiaries().then(setDiaries);
-  }, []);
+const DiaryList = ({ entries }: { entries: DiaryEntry[] }) => {
 
   return (
+    console.log(entries),
     <div>
-      <h1>Flight Diaries</h1>
-      {diaries.map((entry) => (
+      <h2><em>Flight Diaries</em></h2>
+      {entries.map((entry) => (
         <div key={entry.id}>
-          <p>Date: {entry.date}</p>
-          <p>Weather: {entry.weather}</p>
-          <p>Visibility: {entry.visibility}</p>
-          {entry.comment && <p>Comment: {entry.comment}</p>}
+          <p><strong>Date:</strong> {entry.date}</p>
+          <p><strong>Weather:</strong> {entry.weather}</p>
+          <p><strong>Visibility:</strong> {entry.visibility}</p>
+          <p>Comment: {entry.comment}</p>
           <hr />
         </div>
       ))}
@@ -25,4 +19,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default DiaryList;
