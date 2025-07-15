@@ -14,9 +14,10 @@ export interface Patient {
   ssn: string;
   gender: string;
   occupation: string;
+  entries: Entry[];
 }
 
-export type NonSensitivePatient = Omit<Patient, "ssn">;
+export type NonSensitivePatient = Omit<Patient, "ssn" | "entries">;
 
 export type NewPatient = z.infer<typeof NewPatientSchema>;
 
@@ -25,3 +26,5 @@ export enum Gender {
   Female = "female",
   Other = "other",
 }
+
+export interface Entry {}
