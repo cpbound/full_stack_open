@@ -44,6 +44,22 @@ const PatientPage = () => {
         <Typography>SSN: {patient.ssn}</Typography>
         <Typography>Occupation: {patient.occupation}</Typography>
         <Typography>Entries: {patient.entries.length}</Typography>
+        <Typography variant="h6" style={{ marginTop: 20 }}>Entries</Typography>
+        {patient.entries.length === 0 ? (
+          <Typography>No entries</Typography>
+        ) : (
+          patient.entries.map(entry => (
+            <Card key={entry.id} style={{ margin: '1em 0', background: '#f9f9f9' }}>
+              <CardContent>
+                <Typography variant="subtitle1">{entry.date}</Typography>
+                <Typography>{entry.description}</Typography>
+                {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+                  <Typography>Diagnosis codes: {entry.diagnosisCodes.join(', ')}</Typography>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </CardContent>
     </Card>
   );
