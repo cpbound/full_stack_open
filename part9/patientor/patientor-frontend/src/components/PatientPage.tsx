@@ -7,6 +7,7 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import { apiBaseUrl } from "../constants";
+import EntryDetails from "./EntryDetails";
 
 const genderIcon = (gender: string) => {
   switch (gender) {
@@ -78,6 +79,7 @@ const PatientPage = () => {
                     </ul>
                   </div>
                 )}
+                <EntryDetails entry={entry} />
               </CardContent>
             </Card>
           ))
