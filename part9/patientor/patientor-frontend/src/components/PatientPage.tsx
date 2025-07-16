@@ -50,7 +50,7 @@ const PatientPage = () => {
   if (!patient) return <div>Loading...</div>;
 
   return (
-    <Card style={ { margin: '1em', padding: '1em' }}>
+    <Card style={ { margin: '1em', padding: '1em', background: '#e5ff0044' } }>
       <CardContent>
         <Typography variant="h5">
           {patient.name} {genderIcon(patient.gender)}
@@ -64,7 +64,7 @@ const PatientPage = () => {
           <Typography>No entries</Typography>
         ) : (
           patient.entries.map(entry => (
-            <Card key={entry.id} style={{ margin: '1em 0', background: '#f9f9f9' }}>
+            <Card key={entry.id} style={{ margin: '1em 0', background: '#dbdbdbff' }}>
               <CardContent>
                 <Typography variant="subtitle1">{entry.date}</Typography>
                 <Typography><em>{entry.description}</em></Typography>

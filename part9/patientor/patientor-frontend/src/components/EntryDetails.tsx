@@ -2,7 +2,7 @@ import { CardContent, Typography } from "@mui/material";
 import { Entry, HealthCheckRating } from "../types";
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import WorkIcon from '@mui/icons-material/Work';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
 
 const HealthCheckIcon = ({ rating }: { rating: HealthCheckRating }) => {
   const colors = ["green", "yellow", "orange", "red"];
@@ -14,25 +14,31 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
     case "HealthCheck":
       return (
         <CardContent>
-          <Typography variant="subtitle2"><MedicalServicesIcon /> Health Check</Typography>
-          <Typography>Rating: <HealthCheckIcon rating={entry.healthCheckRating} /></Typography>
+          <hr />
+          <Typography><MedicalServicesIcon /> Health Check</Typography>
+          <Typography><strong>Rating:</strong> <HealthCheckIcon rating={entry.healthCheckRating} /></Typography>
+          <Typography><strong>Specialist:</strong> {entry.specialist}</Typography>
         </CardContent>
       );
     case "Hospital":
       return (
         <CardContent>
-          <Typography variant="subtitle2"><LocalHospitalIcon /> Hospital</Typography>
-          <Typography>Discharge: {entry.discharge.date} ({entry.discharge.criteria})</Typography>
+          <hr />
+          <Typography><LocationCityIcon /> Hospital</Typography>
+          <Typography><strong>Discharge:</strong> {entry.discharge.date} ({entry.discharge.criteria})</Typography>
+          <Typography><strong>Specialist:</strong> {entry.specialist}</Typography>
         </CardContent>
       );
     case "OccupationalHealthcare":
       return (
         <CardContent>
-          <Typography variant="subtitle2"><WorkIcon /> Occupational Healthcare</Typography>
-          <Typography>Employer: {entry.employerName}</Typography>
+          <hr />
+          <Typography><WorkIcon /> Occupational Healthcare</Typography>
+          <Typography><strong>Employer:</strong> {entry.employerName}</Typography>
           {entry.sickLeave && (
-            <Typography>Sick leave: {entry.sickLeave.startDate} - {entry.sickLeave.endDate}</Typography>
+            <Typography><strong>Sick leave:</strong> {entry.sickLeave.startDate} - {entry.sickLeave.endDate}</Typography>
           )}
+          <Typography><strong>Specialist:</strong> {entry.specialist}</Typography>
         </CardContent>
       );
     default:
