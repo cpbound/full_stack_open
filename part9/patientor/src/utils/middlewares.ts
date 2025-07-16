@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { NewPatientSchema } from "./utils";
-import { Diagnosis } from "../types";
+import { NewPatientSchema, BaseEntrySchema, HealthCheckEntrySchema, HospitalEntrySchema, OccupationalHealthcareEntrySchema, EntrySchema } from "./utils";
+import { Diagnosis, Entry } from "../types";
 import { z } from "zod";
 
 export const errorMiddleware = (
@@ -33,6 +33,39 @@ export const newPatientParser = (
     console.log(req.body);
     next();
   } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const newEntryParser = (
+  req: Request<unknown, unknown, Entry>,
+  _res: Response,
+  next: NextFunction,
+): void => {
+  try {
+    BaseEntrySchema.parse(req.body);
+    console.log(req.body);
+
+    switch (req.body.type) {
+      case 'HealthCheck':
+        HealthCheckEntrySchema.parse(req.body);
+        break;
+
+      case 'Hospital':
+        HospitalEntrySchema.parse(req.body);
+        break;
+
+      case 'OccupationalHealthcare':
+        OccupationalHealthcareEntrySchema.parse(req.body);
+        break;
+
+      default:
+        EntrySchema.parse(req.body);
+        break;
+    }
+
+    next();
+  } catch (error) {
     next(error);
   }
 };
