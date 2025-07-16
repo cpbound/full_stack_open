@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Card, CardContent } from "@mui/material";
-import { Patient } from "../types";
+import { Patient, Diagnosis } from "../types";
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
@@ -22,6 +22,7 @@ const genderIcon = (gender: string) => {
 const PatientPage = () => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -32,10 +33,23 @@ const PatientPage = () => {
     fetchPatient();
   }, [id]);
 
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      const { data } = await axios.get<Diagnosis[]>(`${apiBaseUrl}/diagnoses`);
+      setDiagnoses(data);
+    };
+    fetchDiagnoses();
+  }, []);
+
+  const getDiagnosisDesc = (code: string) => {
+    const found = diagnoses.find(d => d.code === code);
+    return found ? found.name : '';
+  };
+
   if (!patient) return <div>Loading...</div>;
 
   return (
-    <Card>
+    <Card style={ { margin: '1em', padding: '1em' }}>
       <CardContent>
         <Typography variant="h5">
           {patient.name} {genderIcon(patient.gender)}
@@ -44,7 +58,7 @@ const PatientPage = () => {
         <Typography>SSN: {patient.ssn}</Typography>
         <Typography>Occupation: {patient.occupation}</Typography>
         <Typography>Entries: {patient.entries.length}</Typography>
-        <Typography variant="h6" style={{ marginTop: 20 }}>Entries</Typography>
+        <Typography variant="h6" style={{ marginTop: 20 }}><strong>Entries</strong></Typography>
         {patient.entries.length === 0 ? (
           <Typography>No entries</Typography>
         ) : (
@@ -52,9 +66,17 @@ const PatientPage = () => {
             <Card key={entry.id} style={{ margin: '1em 0', background: '#f9f9f9' }}>
               <CardContent>
                 <Typography variant="subtitle1">{entry.date}</Typography>
-                <Typography>{entry.description}</Typography>
+                <Typography><em>{entry.description}</em></Typography>
                 {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
-                  <Typography>Diagnosis codes: {entry.diagnosisCodes.join(', ')}</Typography>
+                  <div>
+                    <ul style={{ margin: '1em 0', paddingLeft: '3em' }}>
+                      {entry.diagnosisCodes.map(code => (
+                        <li key={code}>
+                          {code} - {getDiagnosisDesc(code)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </CardContent>
             </Card>
