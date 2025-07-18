@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Card, CardContent } from "@mui/material";
-import { Patient, Diagnosis } from "../types";
+import { Patient, Diagnosis, Entry } from "../types";
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import { apiBaseUrl } from "../constants";
 import EntryDetails from "./EntryDetails";
+import AddEntryForm from "./AddEntryForm";
+import patientService from "../services/patients";
 
 const genderIcon = (gender: string) => {
   switch (gender) {
@@ -24,6 +26,11 @@ const PatientPage = () => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const handleAddEntry = async (entry: Omit<Entry, "id">) => {
+    if (!patient) return;
+    const newEntry = await patientService.addEntry(patient.id, entry);
+    setPatient({ ...patient, entries: [...patient.entries, newEntry] });
+  };
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -58,6 +65,7 @@ const PatientPage = () => {
         <Typography>Date of Birth: {patient.dateOfBirth}</Typography>
         <Typography>SSN: {patient.ssn}</Typography>
         <Typography>Occupation: {patient.occupation}</Typography>
+        <AddEntryForm onSubmit={handleAddEntry} />
         <Typography>Entries: {patient.entries.length}</Typography>
         <Typography variant="h6" style={{ marginTop: 20 }}><strong>Entries</strong></Typography>
         {patient.entries.length === 0 ? (
