@@ -66,13 +66,12 @@ const PatientPage = () => {
         <Typography>SSN: {patient.ssn}</Typography>
         <Typography>Occupation: {patient.occupation}</Typography>
         <AddEntryForm onSubmit={handleAddEntry} />
-        <Typography>Entries: {patient.entries.length}</Typography>
-        <Typography variant="h6" style={{ marginTop: 20 }}><strong>Entries</strong></Typography>
+        <Typography variant="h6" style={{ marginTop: 20 }}><strong>Entries ({patient.entries.length})</strong></Typography>
         {patient.entries.length === 0 ? (
           <Typography>No entries</Typography>
         ) : (
           patient.entries.map(entry => (
-            <Card key={entry.id} style={{ margin: '1em 0', background: '#dbdbdbff' }}>
+            <Card key={entry.id} style={{ margin: '1em 0', background: '#f5f5f5' }}>
               <CardContent>
                 <Typography variant="subtitle1">{entry.date}</Typography>
                 <Typography><em>{entry.description}</em></Typography>
