@@ -1,26 +1,25 @@
 import { useState } from "react";
-import { HealthCheckEntry, HealthCheckRating, HospitalEntry, OccupationalHealthcareEntry } from "../types";
-import { Button, TextField, Typography, Alert, Card, CardContent } from "@mui/material";
+import { HealthCheckEntry, HealthCheckRating, HospitalEntry, OccupationalHealthcareEntry, Diagnosis } from "../types";
+import { Button, TextField, Typography, Alert, Card, CardContent, MenuItem, Select, InputLabel, FormControl, Checkbox, ListItemText } from "@mui/material";
 import axios from "axios";
+
 
 interface Props {
   onSubmit: (
     values: Omit<HealthCheckEntry, "id"> | Omit<HospitalEntry, "id"> | Omit<OccupationalHealthcareEntry, "id">
   ) => Promise<void>;
+  diagnoses: Diagnosis[];
 }
 
-const AddEntryForm = ({ onSubmit }: Props) => {
+const AddEntryForm = ({ onSubmit, diagnoses }: Props) => {
   const [type, setType] = useState<"HealthCheck" | "Hospital" | "OccupationalHealthcare">("HealthCheck");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
-  // HealthCheck
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
   const [healthCheckRating, setHealthCheckRating] = useState("");
-  // Hospital
   const [dischargeDate, setDischargeDate] = useState("");
   const [dischargeCriteria, setDischargeCriteria] = useState("");
-  // OccupationalHealthcare
   const [employerName, setEmployerName] = useState("");
   const [sickLeaveStart, setSickLeaveStart] = useState("");
   const [sickLeaveEnd, setSickLeaveEnd] = useState("");
@@ -31,7 +30,7 @@ const AddEntryForm = ({ onSubmit }: Props) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    // Validate fields by type
+
     if (type === "HealthCheck") {
       const rating = Number(healthCheckRating);
       if (isNaN(rating) || rating < 0 || rating > 3) {
@@ -54,6 +53,13 @@ const AddEntryForm = ({ onSubmit }: Props) => {
         return;
       }
     }
+
+    const isValidDate = (date: string) => /^\d{4}-\d{2}-\d{2}$/.test(date);
+    if (!isValidDate(date)) {
+      setError("Date must be in format YYYY-MM-DD");
+      setSubmitting(false);
+      return;
+    }
     try {
       let entry: Omit<HealthCheckEntry, "id"> | Omit<HospitalEntry, "id"> | Omit<OccupationalHealthcareEntry, "id"> | undefined;
       if (type === "HealthCheck") {
@@ -62,9 +68,7 @@ const AddEntryForm = ({ onSubmit }: Props) => {
           description,
           date,
           specialist,
-          diagnosisCodes: diagnosisCodes
-            ? diagnosisCodes.split(",").map((c) => c.trim())
-            : undefined,
+          diagnosisCodes: diagnosisCodes.length > 0 ? diagnosisCodes : undefined,
           healthCheckRating: Number(healthCheckRating) as HealthCheckRating,
         };
       } else if (type === "Hospital") {
@@ -73,9 +77,7 @@ const AddEntryForm = ({ onSubmit }: Props) => {
           description,
           date,
           specialist,
-          diagnosisCodes: diagnosisCodes
-            ? diagnosisCodes.split(",").map((c) => c.trim())
-            : undefined,
+          diagnosisCodes: diagnosisCodes.length > 0 ? diagnosisCodes : undefined,
           discharge: {
             date: dischargeDate,
             criteria: dischargeCriteria,
@@ -87,9 +89,7 @@ const AddEntryForm = ({ onSubmit }: Props) => {
           description,
           date,
           specialist,
-          diagnosisCodes: diagnosisCodes
-            ? diagnosisCodes.split(",").map((c) => c.trim())
-            : undefined,
+          diagnosisCodes: diagnosisCodes.length > 0 ? diagnosisCodes : undefined,
           employerName,
           sickLeave:
             sickLeaveStart && sickLeaveEnd
@@ -103,7 +103,7 @@ const AddEntryForm = ({ onSubmit }: Props) => {
       setDescription("");
       setDate("");
       setSpecialist("");
-      setDiagnosisCodes("");
+      setDiagnosisCodes([]);
       setHealthCheckRating("");
       setDischargeDate("");
       setDischargeCriteria("");
@@ -176,13 +176,23 @@ const AddEntryForm = ({ onSubmit }: Props) => {
             margin="normal"
             required
           />
-          <TextField
-            label="Diagnosis Codes (comma separated)"
-            value={diagnosisCodes}
-            onChange={(e) => setDiagnosisCodes(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="diagnosis-codes-label">Diagnosis Codes</InputLabel>
+            <Select
+              labelId="diagnosis-codes-label"
+              multiple
+              value={diagnosisCodes}
+              onChange={e => setDiagnosisCodes(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+              renderValue={selected => (selected as string[]).join(', ')}
+            >
+              {diagnoses.map(d => (
+                <MenuItem key={d.code} value={d.code}>
+                  <Checkbox checked={diagnosisCodes.indexOf(d.code) > -1} />
+                  <ListItemText primary={`${d.code} - ${d.name}`} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {type === "HealthCheck" && (
             <TextField
               label="HealthCheck Rating (0-3)"

@@ -65,7 +65,7 @@ const PatientPage = () => {
         <Typography>Date of Birth: {patient.dateOfBirth}</Typography>
         <Typography>SSN: {patient.ssn}</Typography>
         <Typography>Occupation: {patient.occupation}</Typography>
-        <AddEntryForm onSubmit={handleAddEntry} />
+        <AddEntryForm onSubmit={handleAddEntry} diagnoses={diagnoses} />
         <Typography variant="h6" style={{ marginTop: 20 }}><strong>Entries ({patient.entries.length})</strong></Typography>
         {patient.entries.length === 0 ? (
           <Typography>No entries</Typography>

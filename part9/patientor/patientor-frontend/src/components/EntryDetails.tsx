@@ -42,7 +42,7 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
         </CardContent>
       );
     default:
-      // exhaustive type checking
+
       throw new Error(`Unhandled entry type: ${JSON.stringify(entry)}`);
   }
 };
